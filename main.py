@@ -28,11 +28,17 @@ BlasterNoise = pygame.mixer.Sound('blaster.wav')
 winw = 600
 winh = 600
 screen = pygame.display.set_mode((winw, winh))
+window = pygame.display.set_mode((winw, winh))
+bg_img = pygame.image.load('background.png')
+bg_img = pygame.transform.scale(bg_img,(winw, winh))
+
+i = 0
 
 clock = pygame.time.Clock()
 
 player1 = pygame.rect.Rect(32, 32, 24, 24)
 rect1 = pygame.rect.Rect(550, 550, 16, 16)
+
 # Define a player object by extending pygame.sprite.Sprite
 # The surface drawn on the screen is now an attribute of 'player'
 class Player(pygame.sprite.Sprite):
@@ -49,7 +55,7 @@ class Player(pygame.sprite.Sprite):
         if pressed_keys[K_DOWN]:
             self.rect.move_ip(0, 10)
         if pressed_keys[K_LEFT]:
-            self.rect = pygame.transform.rotate(self.rect, -10)
+            self.rect.move_ip(-10, 0)
         if pressed_keys[K_RIGHT]:
             self.rect.move_ip(10, 0)
 
@@ -68,6 +74,7 @@ class Player(pygame.sprite.Sprite):
     def draw(self, surface):
         pygame.draw.rect(surface, (0, 0, 128), self.rect)
 
+#class for basic bullet
 class Bullet(pygame.sprite.Sprite):
     def __init__(self):
         super(Bullet, self).__init__()
@@ -84,7 +91,7 @@ class Bullet(pygame.sprite.Sprite):
             enemy_list.remove(enemy)
 
      
-
+#Example enemy for collision
 class Triangle(pygame.sprite.Sprite):
     def __init__(self):
         self.rect = rect1
@@ -102,7 +109,7 @@ class Triangle(pygame.sprite.Sprite):
 # Initialize pygame
 pygame.init()
 
-# Instantiate player. Right now, this is just a rectangle.
+
 player = Player()
 clock = pygame.time.Clock()
 triangle  = Triangle()
@@ -129,9 +136,16 @@ while running:
             # If the Esc key is pressed, then exit the main loop
             elif event.key == K_ESCAPE:
                 running = False
-
-    screen.fill((255, 255, 255))
+    #Create Screen
     
+    window.fill((0,0,0))
+    window.blit(bg_img,(i,0))
+    window.blit(bg_img,(winw+i,0))
+    if(i==-winw):
+            window.blit(bg_img,(winw+i,0))
+            i=0
+            i-=0.05
+    #Collision to remove enemy
     for enemy in enemies:
         enemy.move()
         bullet.collide(enemy, enemies)
@@ -143,7 +157,7 @@ while running:
     pressed_keys = pygame.key.get_pressed()
     player.update(pressed_keys)
 
-    
+    #if bullet exist create bullet
     if BulletExist==1:
         bullet.update()
 
@@ -151,11 +165,8 @@ while running:
     if BulletExist==1:
        screen.blit(bullet.surf, bullet.rect)
 
-   # if pygame.sprite.spritecollideany(enemies, bullet):
-    #   enemies.kill()
-     #  running = True
-
     # Update the display
     pygame.display.update()
 
     clock.tick(40)
+pygame.quit()
