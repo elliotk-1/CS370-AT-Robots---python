@@ -42,17 +42,17 @@ i = 0
 
 clock = pygame.time.Clock()
 
-player1 = pygame.rect.Rect(32, 32, 24, 24)
 rect1 = pygame.rect.Rect(550, 550, 16, 16)
 
 # Define a player object by extending pygame.sprite.Sprite
 # The surface drawn on the screen is now an attribute of 'player'
-class Player(pygame.sprite.Sprite):
+class Player():
     def __init__(self):
         super(Player, self).__init__()
-        self.surf = pygame.image.load("triangleV3.png").convert()
-        self.surf.set_colorkey((255, 255, 255), RLEACCEL)
-        self.rect = self.surf.get_rect()
+        self.surf = pygame.Surface((75, 25))
+        self.surf.fill((255, 255, 150))
+        self.image = pygame.image.load('triangleV3.png').convert_alpha()
+        self.rect = self.image.get_rect()
     
     # Move the sprite based on user keypresses
     def update(self, pressed_keys):
@@ -77,8 +77,6 @@ class Player(pygame.sprite.Sprite):
    # def collide(self, enemy, enemy_list):
     #    if self.rect.colliderect(enemy.rect):
      #       enemy_list.remove(enemy)
-    def draw(self, surface):
-        pygame.draw.rect(surface, (0, 0, 128), self.rect)
 
 #class for basic bullet
 class Bullet(pygame.sprite.Sprite):
@@ -212,11 +210,11 @@ while running:
         enemy.draw(screen)
         
 
-    player.draw(screen) 
     # Get the set of keys pressed and check for user input
     pressed_keys = pygame.key.get_pressed()
     player.update(pressed_keys)
 
+    screen.blit(player.image, player.rect)
     #if bullet exist create bullet
     if BulletExist==1:
         bullet.update()
