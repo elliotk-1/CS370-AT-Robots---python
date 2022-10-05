@@ -7,6 +7,8 @@ pygame.mixer.init()
 BulletExist = 0
 
 import random
+import sys
+import math
 
 # Import pygame.locals for easier access to key coordinates
 # Updated to conform to flake8 and black standards
@@ -31,6 +33,10 @@ screen = pygame.display.set_mode((winw, winh))
 window = pygame.display.set_mode((winw, winh))
 bg_img = pygame.image.load('background.png')
 bg_img = pygame.transform.scale(bg_img,(winw, winh))
+
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+FPS = 60
 
 i = 0
 
@@ -90,7 +96,39 @@ class Bullet(pygame.sprite.Sprite):
         if self.rect.colliderect(enemy.rect):
             enemy_list.remove(enemy)
 
-     
+class Button:
+    def __init__(self, x, y, width, height, fg, bg, content, size):
+        self.font = pygame.font.Font('arial.ttf',  32)
+        self.content = content
+
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
+        self.fg = fg
+        self.bg = bg
+
+        self.image = pygame.Surface((self.width, self.height))
+        self.image.fill(self.bg)
+        self.rect = self.image.get_rect()
+
+        self.rect.x = self.x
+        self.rect.y = self.y
+
+        self.text = self.font.render(self.content, True, self.fg)
+        self.text_rect = self.text.get_rect(center=(self.width/2, self.height/2))
+        self.image.blit(self.text, self.text_rect)
+
+    # get pos of mouse, check if mouse is on it, check if mouse pressed it
+    def is_pressed(self, pos, pressed):
+        if self.rect.collidepoint(pos):
+            if pressed[0]:
+                return True
+            return False
+        return False
+
+
 #Example enemy for collision
 class Triangle(pygame.sprite.Sprite):
     def __init__(self):
@@ -115,6 +153,28 @@ clock = pygame.time.Clock()
 triangle  = Triangle()
 bullet = Bullet()
 enemies = [triangle]
+
+#title = pygame.font.get_default_font('AT Robots Inspired Game', True, WHITE)
+#title_rect = title.get_rect(x=220, y=200)
+
+play_button = Button(350, 250, 100, 50, BLACK, WHITE, 'Play', 32)
+
+intro = True
+while intro:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            intro = False
+    mouse_pos = pygame.mouse.get_pos()
+    mouse_pressed = pygame.mouse.get_pressed()
+
+    if play_button.is_pressed(mouse_pos, mouse_pressed):
+        intro = False
+
+    #screen.blit(pygame.intro_background, (0,0))
+    #pygame.screen.blit(title, title_rect)
+    screen.blit(play_button.image, play_button.rect)
+    clock.tick(FPS)
+    pygame.display.update()
 
 # Variable to keep the main loop running
 running = True
