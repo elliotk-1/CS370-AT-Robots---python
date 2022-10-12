@@ -9,8 +9,8 @@ pygame.init()
 time = 60
 width = 800
 height = 600
-bg_width = 2560
-bg_height = 1600
+bg_width = 1760
+bg_height = 1000
 screen = pygame.display.set_mode((width,height))
 bg_img = pygame.image.load('background.png')
 #bg_img = pygame.transform.scale(bg_img,(width,height))
@@ -42,17 +42,17 @@ while True:
         #bg_x = max(0, min(bg_size[0]-screen_size[0], bg_x))
         #bg_y = max(0, min(bg_size[1]-screen_size[1], bg_y))
         screen.blit(bg_img, (-x, -y))
-        if(x==-bg_width):
-                screen.blit(bg_img, (bg_width+x,y))
+        if(x<0):
+                screen.blit(bg_img, (bg_width,y))
+                x=bg_width
+        if(x>bg_width):
+                screen.blit(bg_img, (0,y))
                 x=0
-        if(x==bg_width):
-                screen.blit(bg_img, (-bg_width+x,y))
-                x=0
-        if(y==-bg_height):
-                screen.blit(bg_img,(x,bg_height+y))
-                y=0
-        if(y==bg_height):
-                screen.blit(bg_img, (x, -bg_height+y))
+        if(y<0):
+                screen.blit(bg_img,(x,bg_height))
+                y=bg_height
+        if(y>bg_height):
+                screen.blit(bg_img, (x, 0))
                 y=0
 
         pygame.display.flip()
