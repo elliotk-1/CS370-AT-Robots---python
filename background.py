@@ -7,9 +7,9 @@ from pygame.locals import *
 pygame.init()
 
 time = 60
-width = 800
+width = 600
 height = 600
-bg_width = 1760
+bg_width = 1560
 bg_height = 1000
 screen = pygame.display.set_mode((width,height))
 bg_img = pygame.image.load('background.png')
