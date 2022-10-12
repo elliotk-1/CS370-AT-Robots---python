@@ -1,7 +1,7 @@
 # Import the pygame module
 import pygame
 from pygame import mixer
-import random
+import time
 
 pygame.mixer.init()
 
@@ -31,6 +31,9 @@ from pygame.locals import (
 BlasterNoise=pygame.mixer.Sound('blaster.wav')
 KillNoise=pygame.mixer.Sound('Kill.wav')
 HitNoise=pygame.mixer.Sound('Hit.wav')
+winSound=pygame.mixer.Sound('Victory.wav')
+mixer.music.load('BackgroundMusic.wav')
+mixer.music.play(-1)
 
 # Define constants for the screen width and height
 SCREEN_WIDTH = 800
@@ -191,6 +194,28 @@ class deadShip2():
         if player2.dead == 0:
             self.rect.top = player2.rect.top
             self.rect.left = player2.rect.left
+
+class PlayerLost():
+    def __init__(self):
+        super(PlayerLost, self).__init__()
+        self.surf = pygame.Surface((150, 100))
+        self.surf.fill((255, 255, 150))
+        self.image = pygame.image.load('PlayerLost.png').convert_alpha()
+        self.rect = self.image.get_rect()
+        self.rect.top = 270
+        self.rect.left = 278
+
+
+class Player2Lost():
+    def __init__(self):
+        super(Player2Lost, self).__init__()
+        self.surf = pygame.Surface((150, 100))
+        self.surf.fill((255, 255, 150))
+        self.image = pygame.image.load('Player2Lost.png').convert_alpha()
+        self.rect = self.image.get_rect()
+        self.rect.top = 270
+        self.rect.left = 278
+
 # Create the screen object
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -202,12 +227,19 @@ player2 = Player2()
 bullet2 = Bullet2()
 deadship = deadShip()
 deadship2 = deadShip2()
+playerLost = PlayerLost()
+player2Lost = Player2Lost()
 
 # Variable to keep the main loop running
 running = True
 
 # Main loop
 while running:
+    if player.dead == 1 or player2.dead == 1:
+        mixer.music.stop()
+        winSound.play()
+        time.sleep(3)
+        running = False
     # for loop through the event queue
     for event in pygame.event.get():
         # Check for KEYDOWN event
@@ -289,7 +321,9 @@ while running:
         screen.blit(bullet2.surf,bullet2.rect)
     if player.dead == 1:
         screen.blit(deadship.image, deadship.rect)
+        screen.blit(playerLost.image, playerLost.rect)
     if player2.dead == 1:
         screen.blit(deadship2.image, deadship2.rect)
+        screen.blit(player2Lost.image, player2Lost.rect)
     # Update the display
     pygame.display.flip()
