@@ -32,7 +32,9 @@ winh = 600
 screen = pygame.display.set_mode((winw, winh))
 window = pygame.display.set_mode((winw, winh))
 bg_img = pygame.image.load('background.png')
-bg_img = pygame.transform.scale(bg_img,(winw, winh))
+#bg_img = pygame.transform.scale(bg_img,(winw, winh))
+#bg_width = 1560
+#bg_height = 1000
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -137,6 +139,38 @@ class Triangle(pygame.sprite.Sprite):
     def draw(self, surface):
         pygame.draw.rect(surface, (100, 100, 100), self.rect)
 
+class Background(pygame.sprite.Sprite):
+    def __init__(self):
+        self.bg_width = 1560
+        self.bg_height = 1000
+        self.x = 0
+        self.y = 0
+        self.bg_img = pygame.image.load('background.png')
+
+        self.keys = pygame.key.get_pressed()
+        if self.keys[pygame.K_LEFT]:
+                self.x -= 1
+        if self.keys[pygame.K_RIGHT]:
+                self.x += 1
+        if self.keys[pygame.K_UP]:
+                self.y -= 1
+        if self.keys[pygame.K_DOWN]:
+                self.y += 1
+
+        screen.blit(self.bg_img, (-self.x, -self.y))
+        if(self.x<0):
+                screen.blit(self.bg_img, (self.bg_width,self.y))
+                self.x=self.bg_width
+        if(self.x>self.bg_width):
+                screen.blit(self.bg_img, (0,self.y))
+                self.x=0
+        if(self.y<0):
+                screen.blit(self.bg_img,(self.x,self.bg_height))
+                self.y=self.bg_height
+        if(self.y>self.bg_height):
+                screen.blit(self.bg_img, (self.x, 0))
+                self.y=0
+
 # Initialize pygame
 pygame.init()
 
@@ -162,7 +196,8 @@ while intro:
 
     if play_button.is_pressed(mouse_pos, mouse_pressed):
         intro = False
-
+
+
     # pygame.screen.blit(title, title_rect)
     screen.blit(play_button.image, play_button.rect)
     clock.tick(FPS)
@@ -189,14 +224,14 @@ while running:
             elif event.key == K_ESCAPE:
                 running = False
     #Create Screen
-    
-    window.fill((0,0,0))
-    window.blit(bg_img,(i,0))
-    window.blit(bg_img,(winw+i,0))
-    if(i==-winw):
-            window.blit(bg_img,(winw+i,0))
-            i=0
-            i-=0.05
+    Background()
+    #window.fill((0,0,0))
+    #window.blit(bg_img,(i,0))
+    #window.blit(bg_img,(winw+i,0))
+    #if(i==-winw):
+            #window.blit(bg_img,(winw+i,0))
+            #i=0
+            #i-=0.05
     #Collision to remove enemy
     for enemy in enemies:
         enemy.move()
