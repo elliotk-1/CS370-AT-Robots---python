@@ -1,7 +1,7 @@
 # Import the pygame module
 import pygame
 from pygame import mixer
-import random
+import time
 
 pygame.mixer.init()
 
@@ -31,6 +31,9 @@ from pygame.locals import (
 BlasterNoise=pygame.mixer.Sound('blaster.wav')
 KillNoise=pygame.mixer.Sound('Kill.wav')
 HitNoise=pygame.mixer.Sound('Hit.wav')
+winSound=pygame.mixer.Sound('Victory.wav')
+mixer.music.load('BackgroundMusic.wav')
+mixer.music.play(-1)
 
 # Define constants for the screen width and height
 SCREEN_WIDTH = 800
@@ -43,7 +46,7 @@ class Player():
         super(Player, self).__init__()
         self.surf = pygame.Surface((75, 25))
         self.surf.fill((255, 255, 150))
-        self.image = pygame.image.load('firstShip(2).png').convert_alpha()
+        self.image = pygame.image.load('BShipR.png').convert_alpha()
         self.rect = self.image.get_rect()
         self.health = 5
         self.dead = 0
@@ -84,6 +87,7 @@ class Player():
                     print("Kill!")
                 else:
                     HitNoise.play()
+
 class Bullet():
     def __init__(self):
         super(Bullet, self).__init__()
@@ -121,7 +125,7 @@ class Player2():
         super(Player2, self).__init__()
         self.surf = pygame.Surface((75, 25))
         self.surf.fill((255, 255, 150))
-        self.image = pygame.image.load('firstShip(2)L.png').convert_alpha()
+        self.image = pygame.image.load('RShipL.png').convert_alpha()
         self.rect = self.image.get_rect()
         self.health = 5
         self.dead = 0
@@ -165,6 +169,53 @@ class Player2():
                 else:
                     HitNoise.play()
 
+class deadShip():
+    def __init__(self):
+        super(deadShip, self).__init__()
+        self.surf = pygame.Surface((75, 25))
+        self.surf.fill((255, 255, 150))
+        self.image = pygame.image.load('DeadShipB.png').convert_alpha()
+        self.rect = self.image.get_rect()
+
+    def update(self):
+        if player.dead == 0:
+            self.rect.top = player.rect.top
+            self.rect.left = player.rect.left
+
+class deadShip2():
+    def __init__(self):
+        super(deadShip2, self).__init__()
+        self.surf = pygame.Surface((75, 25))
+        self.surf.fill((255, 255, 150))
+        self.image = pygame.image.load('DeadShipR.png').convert_alpha()
+        self.rect = self.image.get_rect()
+
+    def update(self):
+        if player2.dead == 0:
+            self.rect.top = player2.rect.top
+            self.rect.left = player2.rect.left
+
+class PlayerLost():
+    def __init__(self):
+        super(PlayerLost, self).__init__()
+        self.surf = pygame.Surface((150, 100))
+        self.surf.fill((255, 255, 150))
+        self.image = pygame.image.load('PlayerLost.png').convert_alpha()
+        self.rect = self.image.get_rect()
+        self.rect.top = 270
+        self.rect.left = 278
+
+
+class Player2Lost():
+    def __init__(self):
+        super(Player2Lost, self).__init__()
+        self.surf = pygame.Surface((150, 100))
+        self.surf.fill((255, 255, 150))
+        self.image = pygame.image.load('Player2Lost.png').convert_alpha()
+        self.rect = self.image.get_rect()
+        self.rect.top = 270
+        self.rect.left = 278
+
 # Create the screen object
 # The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -174,56 +225,67 @@ player = Player()
 bullet = Bullet()
 player2 = Player2()
 bullet2 = Bullet2()
+deadship = deadShip()
+deadship2 = deadShip2()
+playerLost = PlayerLost()
+player2Lost = Player2Lost()
 
 # Variable to keep the main loop running
 running = True
 
 # Main loop
 while running:
+    if player.dead == 1 or player2.dead == 1:
+        mixer.music.stop()
+        winSound.play()
+        time.sleep(3)
+        running = False
     # for loop through the event queue
     for event in pygame.event.get():
         # Check for KEYDOWN event
         if event.type == KEYDOWN:
-            if event.key == K_RIGHT:
-                if bullet.rect.right >= SCREEN_WIDTH+26 or bullet.rect.right == 0 or BulletExist==0:
-                    FacingLeft=0
-                    player.image= pygame.image.load('firstShip(2).png').convert_alpha()
-            elif event.key ==K_LEFT:
-                if bullet.rect.right >= SCREEN_WIDTH+26 or bullet.rect.right == 0 or BulletExist==0:
-                    FacingLeft=1
-                    player.image= pygame.image.load('firstShipL.png').convert_alpha()
-            elif event.key == K_RALT:
-                if bullet.rect.right >= SCREEN_WIDTH+26 or bullet.rect.right == 0 or BulletExist==0:
-                    BulletExist=1
-                    BlasterNoise.play()
-                    if FacingLeft==0:
-                        bullet.rect.left=player.rect.left+70
-                        bullet.rect.top=player.rect.top+12
-                    if FacingLeft==1:
-                        bullet.rect.left=player.rect.left+5
-                        bullet.rect.top=player.rect.top+12
+            if player.dead == 0:
+                if event.key == K_RIGHT:
+                    if bullet.rect.right >= SCREEN_WIDTH+26 or bullet.rect.right == 0 or BulletExist==0:
+                        FacingLeft=0
+                        player.image= pygame.image.load('BShipR.png').convert_alpha()
+                elif event.key ==K_LEFT:
+                    if bullet.rect.right >= SCREEN_WIDTH+26 or bullet.rect.right == 0 or BulletExist==0:
+                        FacingLeft=1
+                        player.image= pygame.image.load('BShipL.png').convert_alpha()
+                elif event.key == K_RALT:
+                    if bullet.rect.right >= SCREEN_WIDTH+26 or bullet.rect.right == 0 or BulletExist==0:
+                        BulletExist=1
+                        BlasterNoise.play()
+                        if FacingLeft==0:
+                            bullet.rect.left=player.rect.left+70
+                            bullet.rect.top=player.rect.top+12
+                        if FacingLeft==1:
+                            bullet.rect.left=player.rect.left+5
+                            bullet.rect.top=player.rect.top+12
 
             #Player2
-            if event.key == K_a:
-                if bullet2.rect.right >= SCREEN_WIDTH+26 or bullet2.rect.right == 0 or Bullet2Exist==0:
-                    FacingLeft2=1
-                    player2.image= pygame.image.load('firstShip(2)L.png').convert_alpha()
-            elif event.key ==K_d:
-                if bullet2.rect.right >= SCREEN_WIDTH+26 or bullet2.rect.right == 0 or Bullet2Exist==0:
-                    FacingLeft2=0
-                    player2.image= pygame.image.load('firstShip.png').convert_alpha()
-            elif event.key == K_LALT:
-                if bullet2.rect.right >= SCREEN_WIDTH+26 or bullet2.rect.right == 0 or Bullet2Exist==0:
-                    Bullet2Exist=1
-                    BlasterNoise.play()
-                    if FacingLeft2==0:
-                        bullet2.rect.left=player2.rect.left+70
-                        bullet2.rect.top=player2.rect.top+12
-                    if FacingLeft2==1:
-                        bullet2.rect.left=player2.rect.left+5
-                        bullet2.rect.top=player2.rect.top+12
+            if player2.dead == 0:
+                if event.key == K_a:
+                    if bullet2.rect.right >= SCREEN_WIDTH+26 or bullet2.rect.right == 0 or Bullet2Exist==0:
+                        FacingLeft2=1
+                        player2.image= pygame.image.load('RShipL.png').convert_alpha()
+                elif event.key ==K_d:
+                    if bullet2.rect.right >= SCREEN_WIDTH+26 or bullet2.rect.right == 0 or Bullet2Exist==0:
+                        FacingLeft2=0
+                        player2.image= pygame.image.load('RShipR.png').convert_alpha()
+                elif event.key == K_LALT:
+                    if bullet2.rect.right >= SCREEN_WIDTH+26 or bullet2.rect.right == 0 or Bullet2Exist==0:
+                        Bullet2Exist=1
+                        BlasterNoise.play()
+                        if FacingLeft2==0:
+                            bullet2.rect.left=player2.rect.left+70
+                            bullet2.rect.top=player2.rect.top+12
+                        if FacingLeft2==1:
+                            bullet2.rect.left=player2.rect.left+5
+                            bullet2.rect.top=player2.rect.top+12
             # If the Esc key is pressed, then exit the main loop
-            elif event.key == K_ESCAPE:
+            if event.key == K_ESCAPE:
                 running = False
         # Check for QUIT event. If QUIT, then set running to false.
         elif event.type == QUIT:
@@ -234,6 +296,8 @@ while running:
     # Update the player sprite based on user keypresses
     player.update(pressed_keys)
     player2.update(pressed_keys)
+    deadship.update()
+    deadship2.update()
     if BulletExist==1:
         if FacingLeft==1:
             bullet.updateL()
@@ -255,5 +319,11 @@ while running:
         screen.blit(bullet.surf, bullet.rect)
     if Bullet2Exist==1:
         screen.blit(bullet2.surf,bullet2.rect)
+    if player.dead == 1:
+        screen.blit(deadship.image, deadship.rect)
+        screen.blit(playerLost.image, playerLost.rect)
+    if player2.dead == 1:
+        screen.blit(deadship2.image, deadship2.rect)
+        screen.blit(player2Lost.image, player2Lost.rect)
     # Update the display
     pygame.display.flip()
