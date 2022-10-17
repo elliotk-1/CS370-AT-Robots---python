@@ -1,4 +1,4 @@
-# Import the pygame module
+# Import the pygame modules
 import pygame
 from pygame import *
 import time
@@ -6,7 +6,6 @@ import time
 pygame.mixer.init()
 
 # Import pygame.locals for easier access to key coordinates
-# Updated to conform to flake8 and black standards
 from pygame.locals import (
     K_UP,
     K_DOWN,
@@ -23,6 +22,7 @@ from pygame.locals import (
     K_LALT
 )
 
+# Set sounds and music
 BlasterNoise=pygame.mixer.Sound('blaster.wav')
 KillNoise=pygame.mixer.Sound('Kill.wav')
 HitNoise=pygame.mixer.Sound('Hit.wav')
@@ -34,8 +34,7 @@ mixer.music.play(-1)
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
-# Define a player object by extending pygame.sprite.Sprite
-# The surface drawn on the screen is now an attribute of 'player'
+# Define player1
 class Player():
     def __init__(self):
         super(Player, self).__init__()
@@ -46,7 +45,9 @@ class Player():
         self.rect = self.image.get_rect()
         self.health = 5
         self.dead = 0
-        self.facingLeft = 0
+        self.rect.bottom = SCREEN_HEIGHT
+        self.rect.right = SCREEN_WIDTH
+        self.facingLeft = 1
     
     # Move the sprite based on user keypresses
     def update(self, pressed_keys):
@@ -71,14 +72,16 @@ class Player():
             if self.rect.bottom >= SCREEN_HEIGHT:
                 self.rect.bottom = SCREEN_HEIGHT 
 
+            # Change sprite direction
             if self.facingLeft==0:
                 self.image = pygame.image.load('spaceship1R.png').convert_alpha()
-
             if player.facingLeft==1:
                 self.image = pygame.image.load('spaceship1L.png').convert_alpha()
 
+            # Keep size uniform
             self.image = pygame.transform.scale(self.image, (50, 50))
 
+            # Bullet collision
             if (bullet2.rect.right <= self.rect.right) and (bullet2.rect.top >= self.rect.top) and (bullet2.rect.left >= self.rect.left) and (bullet2.rect.bottom <= self.rect.bottom) and bullet2.exist == 1:
                 print("hit")
                 self.health-=1
@@ -93,6 +96,7 @@ class Player():
                 else:
                     HitNoise.play()
 
+# Create Player1's bullet
 class Bullet():
     def __init__(self):
         super(Bullet, self).__init__()
@@ -103,7 +107,7 @@ class Bullet():
         self.exist = 0
         self.facingLeft = 1
     
-    # Move the sprite based on user keypresses
+    # Move the bullet based on direction of fire
     def updateR(self):
         if self.rect.right < (SCREEN_WIDTH + 26) and self.rect.right != 0:
             self.rect.move_ip(4,0)
@@ -113,6 +117,7 @@ class Bullet():
             self.rect.move_ip(-4,0)
             self.image = pygame.image.load('bullet1L.png').convert_alpha()
 
+# Copy of Bullet1
 class Bullet2():
     def __init__(self):
         super(Bullet2, self).__init__()
@@ -123,7 +128,6 @@ class Bullet2():
         self.exist = 0
         self.facingLeft = 0
     
-    # Move the sprite based on user keypresses
     def updateR(self):
         if self.rect.right < (SCREEN_WIDTH + 26) and self.rect.right != 0:
             self.rect.move_ip(4,0)
@@ -132,9 +136,11 @@ class Bullet2():
         if self.rect.right > 0 and self.rect.right != (SCREEN_WIDTH + 26):
             self.rect.move_ip(-4,0)
             self.image = pygame.image.load('bullet2L.png').convert_alpha()
+
 # Initialize pygame
 pygame.init()
 
+# Copy of Player1
 class Player2():
     def __init__(self):
         super(Player2, self).__init__()
@@ -145,11 +151,8 @@ class Player2():
         self.rect = self.image.get_rect()
         self.health = 5
         self.dead = 0
-        self.rect.bottom = SCREEN_HEIGHT
-        self.rect.right = SCREEN_WIDTH
-        self.facingLeft = 1
+        self.facingLeft = 0
     
-    # Move the sprite based on user keypresses
     def update(self, pressed_keys):
         if self.dead==0:
             if pressed_keys[K_w]:
@@ -161,8 +164,6 @@ class Player2():
             if pressed_keys[K_d]:
                 self.rect.move_ip(1, 0)
                 
-
-            # Keep player on the screen
             if self.rect.left < 0:
                 self.rect.left = 0
             if self.rect.right > SCREEN_WIDTH:
@@ -194,12 +195,13 @@ class Player2():
                 else:
                     HitNoise.play()
 
+# Explosion that follows Player1 to show when it dies
 class deadShip():
     def __init__(self):
         super(deadShip, self).__init__()
         self.surf = pygame.Surface((75, 25))
         self.surf.fill((255, 255, 150))
-        self.image = pygame.image.load('DeadShipB.png').convert_alpha()
+        self.image = pygame.image.load('DeadShip.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (50, 50))
         self.rect = self.image.get_rect()
 
@@ -208,12 +210,13 @@ class deadShip():
             self.rect.top = player.rect.top
             self.rect.left = player.rect.left
 
+# Copy of the first deadship
 class deadShip2():
     def __init__(self):
         super(deadShip2, self).__init__()
         self.surf = pygame.Surface((75, 25))
         self.surf.fill((255, 255, 150))
-        self.image = pygame.image.load('DeadShipR.png').convert_alpha()
+        self.image = pygame.image.load('DeadShip.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (50, 50))
         self.rect = self.image.get_rect()
 
@@ -222,6 +225,7 @@ class deadShip2():
             self.rect.top = player2.rect.top
             self.rect.left = player2.rect.left
 
+# Text to display when Player1 loses
 class PlayerLost():
     def __init__(self):
         super(PlayerLost, self).__init__()
@@ -232,7 +236,7 @@ class PlayerLost():
         self.rect.top = 270
         self.rect.left = 278
 
-
+#Text to display when Player2 loses
 class Player2Lost():
     def __init__(self):
         super(Player2Lost, self).__init__()
@@ -244,10 +248,9 @@ class Player2Lost():
         self.rect.left = 278
 
 # Create the screen object
-# The size is determined by the constant SCREEN_WIDTH and SCREEN_HEIGHT
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT),RESIZABLE)
 
-# Instantiate player. Right now, this is just a rectangle.
+# Instantiate classes
 player = Player()
 bullet = Bullet()
 player2 = Player2()
@@ -337,12 +340,14 @@ while running:
             bullet2.updateR()
 
     backgroundImage=pygame.image.load('background.png').convert()
+    backgrounImage = pygame.transform.scale(backgroundImage, (800, 600))
     backgroundImageRect=backgroundImage.get_rect()
-    # Fill the screen with black
+
+    # Fill the screen with background image
     screen.fill((0, 0, 0))
     screen.blit(backgroundImage,backgroundImageRect)
 
-    # Draw the player on the screen
+    # Draw the objects on the screen
     screen.blit(player.image, player.rect)
     screen.blit(player2.image,player2.rect)
     if bullet.exist==1:
@@ -355,5 +360,6 @@ while running:
     if player2.dead == 1:
         screen.blit(deadship2.image, deadship2.rect)
         screen.blit(player2Lost.image, player2Lost.rect)
+        
     # Update the display
     pygame.display.flip()
