@@ -33,6 +33,13 @@ mixer.music.play(-1)
 # Define constants for the screen width and height
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
+# Constants for colors
+WHITE = (255,255,255)
+BLACK = (0,0,0)
+MAGENTA = (255,165,240)
+# Title image import
+title_img = pygame.image.load('title_screen_image.png')
+title_img.set_colorkey(WHITE)
 
 # Define player1
 class Player():
@@ -95,6 +102,39 @@ class Player():
                     print("Kill!")
                 else:
                     HitNoise.play()
+
+# Button for title screen
+class Button:
+    def __init__(self, x, y, width, height, fg, bg, content, size):
+        self.font = pygame.font.Font('arial.ttf',  32)
+        self.content = content
+
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
+        self.fg = fg
+        self.bg = bg
+
+        self.image = pygame.Surface((self.width, self.height))
+        self.image.fill(self.bg)
+        self.rect = self.image.get_rect()
+
+        self.rect.x = self.x
+        self.rect.y = self.y
+
+        self.text = self.font.render(self.content, True, self.fg)
+        self.text_rect = self.text.get_rect(center=(self.width/2, self.height/2))
+        self.image.blit(self.text, self.text_rect)
+
+    # get pos of mouse, check if mouse is on it, check if mouse pressed it
+    def is_pressed(self, pos, pressed):
+        if self.rect.collidepoint(pos):
+            if pressed[0]:
+                return True
+            return False
+        return False
 
 # Create Player1's bullet
 class Bullet():
@@ -259,6 +299,25 @@ deadship = deadShip()
 deadship2 = deadShip2()
 playerLost = PlayerLost()
 player2Lost = Player2Lost()
+
+# Intro screen
+play_button = Button( ((SCREEN_WIDTH/2) - 50), 300, 100, 50, BLACK, WHITE, 'Play', 32)
+screen.fill(MAGENTA)
+screen.blit(title_img, (50,100))    
+
+intro = True
+while intro:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            intro = False
+    mouse_pos = pygame.mouse.get_pos()
+    mouse_pressed = pygame.mouse.get_pressed()
+
+    if play_button.is_pressed(mouse_pos, mouse_pressed):
+        intro = False
+
+    screen.blit(play_button.image, play_button.rect)
+    pygame.display.update()
 
 # Variable to keep the main loop running
 running = True
