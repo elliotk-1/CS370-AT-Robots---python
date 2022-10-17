@@ -5,6 +5,8 @@ from pygame import mixer
 pygame.mixer.init()
 
 BulletExist = 0
+# Array to keep track of multiple bullets on the screen at once
+# bullets = []
 
 import random
 import sys
@@ -27,8 +29,8 @@ from pygame.locals import (
 BlasterNoise = pygame.mixer.Sound('blaster.wav')
 
 # Define constants for the screen width and height
-winw = 600
-winh = 600
+winw = 1000
+winh = 800
 screen = pygame.display.set_mode((winw, winh))
 window = pygame.display.set_mode((winw, winh))
 bg_img = pygame.image.load('background.png')
@@ -36,6 +38,7 @@ bg_img = pygame.transform.scale(bg_img,(winw, winh))
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+MAGENTA = (255, 165, 240)
 FPS = 60
 
 i = 0
@@ -51,7 +54,7 @@ class Player():
         super(Player, self).__init__()
         self.surf = pygame.Surface((75, 25))
         self.surf.fill((255, 255, 150))
-        self.image = pygame.image.load('triangleV3.png').convert_alpha()
+        self.image = pygame.image.load('spaceship.png').convert_alpha()
         self.rect = self.image.get_rect()
     
     # Move the sprite based on user keypresses
@@ -74,16 +77,16 @@ class Player():
             self.rect.top = 0
         if self.rect.bottom >= winh:
             self.rect.bottom = winh
-   # def collide(self, enemy, enemy_list):
-    #    if self.rect.colliderect(enemy.rect):
-     #       enemy_list.remove(enemy)
+    def collide(self, enemy, enemy_list):
+        if self.rect.colliderect(enemy.rect):
+            enemy_list.remove(enemy)
 
 #class for basic bullet
 class Bullet(pygame.sprite.Sprite):
     def __init__(self):
         super(Bullet, self).__init__()
         self.surf = pygame.image.load('BulletV1.png').convert()
-        self.surf.set_colorkey((255, 0, 0), RLEACCEL)
+        self.surf.set_colorkey(BLACK, RLEACCEL)
         self.rect = self.surf.get_rect()
 
     # Move the sprite based on user keypresses
@@ -93,6 +96,7 @@ class Bullet(pygame.sprite.Sprite):
     def collide(self, enemy, enemy_list):
         if self.rect.colliderect(enemy.rect):
             enemy_list.remove(enemy)
+
 
 class Button:
     def __init__(self, x, y, width, height, fg, bg, content, size):
@@ -130,16 +134,20 @@ class Button:
 #Example enemy for collision
 class Triangle(pygame.sprite.Sprite):
     def __init__(self):
+
+        #super(Triangle, self).__init__()
+        #self.surf = pygame.Surface((75, 25))
+        #self.surf.fill((255, 255, 150))
+        #self.image = pygame.image.load('enemy.png').convert()
+        #self.rect = self.surf.get_rect()
         self.rect = rect1
+    
         self.x = 0
         self.y = 0
     def move(self):
         self.rect.move_ip(0, 0)
     def draw(self, surface):
         pygame.draw.rect(surface, (100, 100, 100), self.rect)
-       
-
-
 
 
 # Initialize pygame
@@ -152,13 +160,15 @@ triangle  = Triangle()
 bullet = Bullet()
 enemies = [triangle]
 
-#title = pygame.font.get_default_font('AT Robots Inspired Game', True, WHITE)
-#title_rect = title.get_rect(x=220, y=200)
+# title = pygame.font.get_default_font('AT Robots Inspired Game', True, WHITE)
+# title_rect = title.get_rect(x=220, y=200)
 
-play_button = Button(350, 250, 100, 50, BLACK, WHITE, 'Play', 32)
+play_button = Button( ((winw/2) - 50), ((winh/2) - 50), 100, 50, BLACK, WHITE, 'Play', 32)
 
 intro = True
 while intro:
+    # screen.blit(title_rect, title)
+    screen.fill(MAGENTA)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             intro = False
@@ -168,8 +178,7 @@ while intro:
     if play_button.is_pressed(mouse_pos, mouse_pressed):
         intro = False
 
-    #screen.blit(pygame.intro_background, (0,0))
-    #pygame.screen.blit(title, title_rect)
+
     screen.blit(play_button.image, play_button.rect)
     clock.tick(FPS)
     pygame.display.update()
@@ -190,19 +199,22 @@ while running:
                     BulletExist=1
                     BlasterNoise.play()
                     bullet.rect.left=player.rect.left+70
-                    bullet.rect.top=player.rect.top+12
+                    bullet.rect.top=player.rect.top+40
+                        
             # If the Esc key is pressed, then exit the main loop
             elif event.key == K_ESCAPE:
                 running = False
-    #Create Screen
-    
+                
+    #Create Game Screen
     window.fill((0,0,0))
     window.blit(bg_img,(i,0))
+                    
     window.blit(bg_img,(winw+i,0))
     if(i==-winw):
             window.blit(bg_img,(winw+i,0))
             i=0
             i-=0.05
+            
     #Collision to remove enemy
     for enemy in enemies:
         enemy.move()
