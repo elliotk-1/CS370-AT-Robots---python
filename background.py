@@ -13,7 +13,6 @@ bg_width = 1560
 bg_height = 1000
 screen = pygame.display.set_mode((width,height))
 bg_img = pygame.image.load('background.png')
-#bg_img = pygame.transform.scale(bg_img,(width,height))
 x = 0
 y = 0
 
@@ -49,21 +48,3 @@ while True:
                 y=0
 
         pygame.display.update()
-
-#i = 0
-
-#running = True
-
-#while running:
-        #window.fill((0,0,0))
-        #window.blit(bg_img,(i,0))
-        #window.blit(bg_img,(width+i,0))
-        #if(i==-width):
-                #window.blit(bg_img,(width+i,0))
-                #i=0
-        #i-=0.05
-        #for event in pygame.event.get():
-                #if event.type == QUIT:
-                        #running = False
-        #pygame.display.update()
-pygame.quit()
