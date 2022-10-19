@@ -336,7 +336,7 @@ while running:
         elif bullet2.facingLeft==0:
             bullet2.updateR()
 
-    backgroundImage=pygame.image.load('background.png').convert()
+    backgroundImage=pygame.image.load('background2.png').convert()
     backgroundImageRect=backgroundImage.get_rect()
     # Fill the screen with black
     screen.fill((0, 0, 0))
