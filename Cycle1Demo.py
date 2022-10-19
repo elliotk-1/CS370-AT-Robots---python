@@ -398,7 +398,7 @@ while running:
         elif bullet2.facingLeft==0:
             bullet2.updateR()
 
-    backgroundImage=pygame.image.load('background.png').convert()
+    backgroundImage=pygame.image.load('background2.png').convert()
     backgrounImage = pygame.transform.scale(backgroundImage, (800, 600))
     backgroundImageRect=backgroundImage.get_rect()
 
