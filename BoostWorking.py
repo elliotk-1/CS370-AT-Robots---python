@@ -36,6 +36,8 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 UI_HEIGHT = 70
 
+clock = pygame.time.Clock()
+
 # Define player1
 class Player():
     def __init__(self):
@@ -234,7 +236,7 @@ class deadShip():
         super(deadShip, self).__init__()
         self.surf = pygame.Surface((75, 25))
         self.surf.fill((255, 255, 150))
-        self.image = pygame.image.load('DeadShip.png').convert_alpha()
+        self.image = pygame.image.load('DeadShipB.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (50, 50))
         self.rect = self.image.get_rect()
 
@@ -249,7 +251,7 @@ class deadShip2():
         super(deadShip2, self).__init__()
         self.surf = pygame.Surface((75, 25))
         self.surf.fill((255, 255, 150))
-        self.image = pygame.image.load('DeadShip.png').convert_alpha()
+        self.image = pygame.image.load('DeadShipR.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (50, 50))
         self.rect = self.image.get_rect()
 
@@ -341,12 +343,28 @@ player2Lost = Player2Lost()
 playerHealth = PlayerHealth()
 player2Health = Player2Health()
 
+# Background image import
+bg = pygame.image.load('background.png').convert()
+bgX = 0
+bgX2 = bg.get_width()
+
 font = pygame.font.SysFont(NONE, 30)
+
+def redrawWindow():
+    screen.blit(bg, (bgX,0))
+    screen.blit(bg, (bgX2,0))
+
+speed = 30
+
 # Variable to keep the main loop running
 running = True
 
 # Main loop
 while running:
+    redrawWindow()
+    clock.tick(speed)
+    bgX -= 1.5
+    bgX2 -= 1.5
     if player.dead == 1 or player2.dead == 1:
         mixer.music.stop()
         winSound.play()
@@ -420,14 +438,6 @@ while running:
             bullet2.updateL()
         elif bullet2.facingLeft==0:
             bullet2.updateR()
-
-    backgroundImage=pygame.image.load('background.png').convert()
-    backgrounImage = pygame.transform.scale(backgroundImage, (800, 600))
-    backgroundImageRect=backgroundImage.get_rect()
-
-    # Fill the screen with background image
-    screen.fill((0, 0, 0))
-    screen.blit(backgroundImage,backgroundImageRect)
 
     #Update UI
     Info1H = font.render("Magenta Health:", True, (236, 240, 241))
