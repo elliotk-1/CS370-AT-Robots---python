@@ -41,6 +41,8 @@ MAGENTA = (255,165,240)
 title_img = pygame.image.load('title_screen_image.png')
 title_img.set_colorkey(WHITE)
 
+clock = pygame.time.Clock()
+
 # Define player1
 class Player():
     def __init__(self):
@@ -60,13 +62,13 @@ class Player():
     def update(self, pressed_keys):
         if self.dead == 0:
             if pressed_keys[K_UP]:
-                self.rect.move_ip(0, -1)
+                self.rect.move_ip(0, -5)
             if pressed_keys[K_DOWN]:
-                self.rect.move_ip(0, 1)
+                self.rect.move_ip(0, 5)
             if pressed_keys[K_LEFT]:
-                self.rect.move_ip(-1, 0)
+                self.rect.move_ip(-5, 0)
             if pressed_keys[K_RIGHT]:
-                self.rect.move_ip(1, 0)
+                self.rect.move_ip(5, 0)
                 
 
             # Keep player on the screen
@@ -196,13 +198,13 @@ class Player2():
     def update(self, pressed_keys):
         if self.dead==0:
             if pressed_keys[K_w]:
-                self.rect.move_ip(0, -1)
+                self.rect.move_ip(0, -5)
             if pressed_keys[K_s]:
-                self.rect.move_ip(0, 1)
+                self.rect.move_ip(0, 5)
             if pressed_keys[K_a]:
-                self.rect.move_ip(-1, 0)
+                self.rect.move_ip(-5, 0)
             if pressed_keys[K_d]:
-                self.rect.move_ip(1, 0)
+                self.rect.move_ip(5, 0)
                 
             if self.rect.left < 0:
                 self.rect.left = 0
@@ -241,7 +243,7 @@ class deadShip():
         super(deadShip, self).__init__()
         self.surf = pygame.Surface((75, 25))
         self.surf.fill((255, 255, 150))
-        self.image = pygame.image.load('DeadShip.png').convert_alpha()
+        self.image = pygame.image.load('DeadShipB.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (50, 50))
         self.rect = self.image.get_rect()
 
@@ -256,7 +258,7 @@ class deadShip2():
         super(deadShip2, self).__init__()
         self.surf = pygame.Surface((75, 25))
         self.surf.fill((255, 255, 150))
-        self.image = pygame.image.load('DeadShip.png').convert_alpha()
+        self.image = pygame.image.load('DeadShipR.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (50, 50))
         self.rect = self.image.get_rect()
 
@@ -305,6 +307,12 @@ play_button = Button( ((SCREEN_WIDTH/2) - 50), 300, 100, 50, BLACK, WHITE, 'Play
 screen.fill(MAGENTA)
 screen.blit(title_img, (50,100))    
 
+# Background image import
+bg = pygame.image.load('background.png').convert()
+#bg = pygame.transform.scale(bg, (800, 600))
+bgX = 0
+bgX2 = bg.get_width()
+
 intro = True
 while intro:
     for event in pygame.event.get():
@@ -319,11 +327,25 @@ while intro:
     screen.blit(play_button.image, play_button.rect)
     pygame.display.update()
 
+def redrawWindow():
+    screen.blit(bg, (bgX,0))
+    screen.blit(bg, (bgX2,0))
+
+speed = 30
+
 # Variable to keep the main loop running
 running = True
 
 # Main loop
 while running:
+    redrawWindow()
+    clock.tick(speed)
+    bgX -= 1.5
+    bgX2 -= 1.5
+    if bgX < bg.get_width() * -1:
+        bgX = bg.get_width()
+    if bgX2 < bg.get_width() * -1:
+        bgX2 = bg.get_width()
     if player.dead == 1 or player2.dead == 1:
         mixer.music.stop()
         winSound.play()
@@ -398,13 +420,13 @@ while running:
         elif bullet2.facingLeft==0:
             bullet2.updateR()
 
-    backgroundImage=pygame.image.load('background2.png').convert()
-    backgrounImage = pygame.transform.scale(backgroundImage, (800, 600))
-    backgroundImageRect=backgroundImage.get_rect()
+    #backgroundImage=pygame.image.load('background2.png').convert()
+    #backgrounImage = pygame.transform.scale(backgroundImage, (800, 600))
+    #backgroundImageRect=backgroundImage.get_rect()
 
     # Fill the screen with background image
-    screen.fill((0, 0, 0))
-    screen.blit(backgroundImage,backgroundImageRect)
+    #screen.fill((0, 0, 0))
+    #screen.blit(backgroundImage,backgroundImageRect)
 
     # Draw the objects on the screen
     screen.blit(player.image, player.rect)

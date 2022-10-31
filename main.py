@@ -33,8 +33,9 @@ winw = 1000
 winh = 800
 screen = pygame.display.set_mode((winw, winh))
 window = pygame.display.set_mode((winw, winh))
-bg_img = pygame.image.load('background.png')
-bg_img = pygame.transform.scale(bg_img,(winw, winh))
+bg = pygame.image.load('background.png')
+bgX = 0
+bgX2 = bg.get_width()
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -149,7 +150,6 @@ class Triangle(pygame.sprite.Sprite):
     def draw(self, surface):
         pygame.draw.rect(surface, (100, 100, 100), self.rect)
 
-
 # Initialize pygame
 pygame.init()
 
@@ -183,11 +183,25 @@ while intro:
     clock.tick(FPS)
     pygame.display.update()
 
+def redrawWindow():
+    screen.blit(bg, (bgX,0))
+    screen.blit(bg, (bgX2,0))
+
+speed = 30
+
 # Variable to keep the main loop running
 running = True
 
 # Main loop
 while running:
+    redrawWindow()
+    clock.tick(speed)
+    bgX -= 1.5
+    bgX2 -= 1.5
+    if bgX < bg.get_width() * -1:
+        bgX = bg.get_width()
+    if bgX2 < bg.get_width() * -1:
+        bgX2 = bg.get_width()
     # for loop through the event queue
     for event in pygame.event.get():
         # Check for KEYDOWN event
@@ -205,16 +219,6 @@ while running:
             elif event.key == K_ESCAPE:
                 running = False
                 
-    #Create Game Screen
-    window.fill((0,0,0))
-    window.blit(bg_img,(i,0))
-                    
-    window.blit(bg_img,(winw+i,0))
-    if(i==-winw):
-            window.blit(bg_img,(winw+i,0))
-            i=0
-            i-=0.05
-            
     #Collision to remove enemy
     for enemy in enemies:
         enemy.move()
