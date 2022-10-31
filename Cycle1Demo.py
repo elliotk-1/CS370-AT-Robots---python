@@ -309,7 +309,6 @@ screen.blit(title_img, (50,100))
 
 # Background image import
 bg = pygame.image.load('background.png').convert()
-#bg = pygame.transform.scale(bg, (800, 600))
 bgX = 0
 bgX2 = bg.get_width()
 
