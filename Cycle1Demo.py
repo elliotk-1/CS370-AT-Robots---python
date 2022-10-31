@@ -420,14 +420,6 @@ while running:
         elif bullet2.facingLeft==0:
             bullet2.updateR()
 
-    #backgroundImage=pygame.image.load('background2.png').convert()
-    #backgrounImage = pygame.transform.scale(backgroundImage, (800, 600))
-    #backgroundImageRect=backgroundImage.get_rect()
-
-    # Fill the screen with background image
-    #screen.fill((0, 0, 0))
-    #screen.blit(backgroundImage,backgroundImageRect)
-
     # Draw the objects on the screen
     screen.blit(player.image, player.rect)
     screen.blit(player2.image,player2.rect)
