@@ -2,6 +2,7 @@
 import pygame
 from pygame import *
 import time
+from random import randint
 
 pygame.mixer.init()
 
@@ -289,6 +290,22 @@ class Player2Lost():
         self.rect.top = 270
         self.rect.left = 278
 
+class Asteroid():
+    def __init__(self):
+        super(Asteroid, self).__init__()
+        self.surf = pygame.Surface((75,25))
+        self.surf.fill((255, 255, 150))
+        self.image = pygame.image.load('asteroid1.png').convert_alpha()
+        self.rect = self.image.get_rect()
+        self.rect.bottom = SCREEN_HEIGHT
+        self.rect.top = 0
+        self.rect.right = SCREEN_WIDTH
+        self.rect.left = 0
+
+direction = 1
+speed_x = 5
+speed_y = 4
+
 # Create the screen object
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT),RESIZABLE)
 
@@ -301,6 +318,7 @@ deadship = deadShip()
 deadship2 = deadShip2()
 playerLost = PlayerLost()
 player2Lost = Player2Lost()
+asteroid = Asteroid()
 
 # Intro screen
 play_button = Button( ((SCREEN_WIDTH/2) - 50), 300, 100, 50, BLACK, WHITE, 'Play', 32)
@@ -337,6 +355,7 @@ running = True
 
 # Main loop
 while running:
+    #background movement
     redrawWindow()
     clock.tick(speed)
     bgX -= 1.5
@@ -345,6 +364,28 @@ while running:
         bgX = bg.get_width()
     if bgX2 < bg.get_width() * -1:
         bgX2 = bg.get_width()
+    # randomly moving asteroids
+    if asteroid.rect.left <= 0 or asteroid.rect.right >= 600:
+        direction *= -1
+        speed_x = randint(0, 8) * direction
+        speed_y = randint(0, 8) * direction
+
+        if speed_x == 0 and speed_y == 0:
+            speed_x = randint(2, 8) * direction
+            speed_y = randint(2, 8) * direction
+
+    if asteroid.rect.top <= 0 or asteroid.rect.bottom >= 800:
+        direction *= -1
+        speed_x = randint(0, 8) * direction
+        speed_y = randint(0, 8) * direction
+
+        if speed_x == 0 and speed_y == 0:
+            speed_x = randint(2, 8) * direction
+            speed_y = randint(2, 8) * direction
+
+    asteroid.rect.left += speed_x
+    asteroid.rect.top += speed_y
+
     if player.dead == 1 or player2.dead == 1:
         mixer.music.stop()
         winSound.play()
@@ -432,6 +473,7 @@ while running:
     if player2.dead == 1:
         screen.blit(deadship2.image, deadship2.rect)
         screen.blit(player2Lost.image, player2Lost.rect)
+    screen.blit(asteroid.image, asteroid.rect)
         
     # Update the display
     pygame.display.flip()
