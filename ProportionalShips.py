@@ -418,8 +418,6 @@ while running:
 
             #Player2
             if player2.dead == 0:
-                if event.key == K_u:
-                    player.size +=5
                 if event.key == K_a:
                     player2.facingLeft=1
                 elif event.key ==K_d:
