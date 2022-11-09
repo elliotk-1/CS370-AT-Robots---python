@@ -3,6 +3,7 @@ import pygame
 from pygame import *
 import time
 from random import randint
+import math
 
 pygame.mixer.init()
 
@@ -100,6 +101,21 @@ class Player():
                     KillNoise.play()
                     self.dead=1
                     self.surf = pygame.Surface((0, 0))
+                    self.rect.top = -1
+                    self.rect.right = -1
+                    print("Kill!")
+                else:
+                    HitNoise.play()
+
+            # Asteroid collision
+            if (asteroid.rect.left<=self.rect.left) and (asteroid.rect.right>=self.rect.right) and (asteroid.rect.top <= self.rect.top) and (asteroid.rect.bottom >= self.rect.bottom):
+                print("hit")
+                self.health-=1
+                asteroid.rect.left = -75
+                if self.health == 0:
+                    KillNoise.play()
+                    self.dead = 1
+                    self.surf = pygame.Surface((0,0))
                     self.rect.top = -1
                     self.rect.right = -1
                     print("Kill!")
@@ -238,6 +254,21 @@ class Player2():
                 else:
                     HitNoise.play()
 
+            # Asteroid collision
+            if (asteroid.rect.left<=self.rect.left) and (asteroid.rect.right>=self.rect.right) and (asteroid.rect.top <= self.rect.top) and (asteroid.rect.bottom >= self.rect.bottom):
+                print("hit")
+                self.health-=1
+                asteroid.rect.left = -75
+                if self.health == 0:
+                    KillNoise.play()
+                    self.dead = 1
+                    self.surf = pygame.Surface((0,0))
+                    self.rect.top = -1
+                    self.rect.right = -1
+                    print("Kill!")
+                else:
+                    HitNoise.play()
+
 # Explosion that follows Player1 to show when it dies
 class deadShip():
     def __init__(self):
@@ -295,16 +326,69 @@ class Asteroid():
         super(Asteroid, self).__init__()
         self.surf = pygame.Surface((75,25))
         self.surf.fill((255, 255, 150))
-        self.image = pygame.image.load('asteroid1.png').convert_alpha()
+        self.image = pygame.image.load('asteroid2.png').convert_alpha()
+        self.image = pygame.transform.scale(self.image, (150, 150))
         self.rect = self.image.get_rect()
-        self.rect.bottom = SCREEN_HEIGHT
-        self.rect.top = 0
-        self.rect.right = SCREEN_WIDTH
-        self.rect.left = 0
+        self.rect.bottom = SCREEN_HEIGHT+75
+        self.rect.left = -75
+        self.health = 5
+        self.dead = 0
+
+        # Boundaries for asteroid
+        if self.rect.left < -150:
+            self.rect.left = -150
+        if self.rect.right > SCREEN_WIDTH+150:
+            self.rect.right = SCREEN_WIDTH+150
+        if self.rect.top <= -150:
+            self.rect.top = -150
+        if self.rect.bottom >= SCREEN_HEIGHT+150:
+            self.rect.bottom = SCREEN_HEIGHT+150
+
+        # Collision with bullets
+        if (bullet.rect.right <= self.rect.right) and (bullet.rect.top >= self.rect.top) and (bullet.rect.left >= self.rect.left) and (bullet.rect.bottom <= self.rect.bottom) and bullet.exist == 1:
+                print("hit")
+                self.health-=1
+                bullet.rect.right = 0
+                if self.health==0:
+                    KillNoise.play()
+                    self.dead=1
+                    self.surf = pygame.Surface((0, 0))
+                    self.rect.top = -1
+                    self.rect.right = -1
+                    print("Kill!")
+                else:
+                    HitNoise.play()
+        if (bullet2.rect.right >= self.rect.right) and (bullet2.rect.top <= self.rect.top) and (bullet2.rect.left <= self.rect.left) and (bullet2.rect.bottom >= self.rect.bottom) and bullet.exist == 1:
+                print("hit")
+                self.health-=1
+                bullet2.rect.right = 0
+                if self.health==0:
+                    KillNoise.play()
+                    self.dead=1
+                    self.surf = pygame.Surface((0, 0))
+                    self.rect.top = -1
+                    self.rect.right = -1
+                    print("Kill!")
+                else:
+                    HitNoise.play()
+
+class deadAsteroid():
+    def __init__(self):
+        super(deadAsteroid, self).__init__()
+        self.surf = pygame.Surface((75, 25))
+        self.surf.fill((255, 255, 150))
+        self.image = pygame.image.load('explosion.png').convert_alpha()
+        self.image = pygame.transform.scale(self.image, (50, 50))
+        self.rect = self.image.get_rect()
+
+    def update(self):
+        if asteroid.dead == 0:
+            self.rect.top = player.rect.top
+            self.rect.left = player.rect.left
 
 direction = 1
-speed_x = 5
-speed_y = 4
+speed_x = randint(0,5)
+speed_y = randint(0,5)
 
 # Create the screen object
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT),RESIZABLE)
@@ -365,23 +449,23 @@ while running:
     if bgX2 < bg.get_width() * -1:
         bgX2 = bg.get_width()
     # randomly moving asteroids
-    if asteroid.rect.left <= 0 or asteroid.rect.right >= 600:
+    if asteroid.rect.left <= -150 or asteroid.rect.right >= SCREEN_WIDTH+150:
         direction *= -1
-        speed_x = randint(0, 8) * direction
-        speed_y = randint(0, 8) * direction
+        speed_x = randint(0, 5) * direction
+        speed_y = randint(0, 5) * direction
 
         if speed_x == 0 and speed_y == 0:
-            speed_x = randint(2, 8) * direction
-            speed_y = randint(2, 8) * direction
+            speed_x = randint(2, 5) * direction
+            speed_y = randint(2, 5) * direction
 
-    if asteroid.rect.top <= 0 or asteroid.rect.bottom >= 800:
+    if asteroid.rect.top <= -150 or asteroid.rect.bottom >= SCREEN_HEIGHT+150:
         direction *= -1
-        speed_x = randint(0, 8) * direction
-        speed_y = randint(0, 8) * direction
+        speed_x = randint(0, 5) * direction
+        speed_y = randint(0, 5) * direction
 
         if speed_x == 0 and speed_y == 0:
-            speed_x = randint(2, 8) * direction
-            speed_y = randint(2, 8) * direction
+            speed_x = randint(2, 5) * direction
+            speed_y = randint(2, 5) * direction
 
     asteroid.rect.left += speed_x
     asteroid.rect.top += speed_y
