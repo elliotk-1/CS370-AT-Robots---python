@@ -80,9 +80,8 @@ class Player():
                 TmpRad = tmpAngle * 0.0174533
                 yVelocity = math.sin(TmpRad)
                 xVelocity = math.cos(TmpRad)
-                totalVelo = xVelocity + yVelocity
-                xVelocity = xVelocity * totalVelo * self.speed
-                yVelocity = yVelocity * totalVelo * self.speed
+                xVelocity = xVelocity * self.speed
+                yVelocity = yVelocity * self.speed
                 if self.angle <= 90 or 180 < self.angle <= 270:
                     self.rect.move_ip(xVelocity * xAngle,yVelocity * yAngle)
                 else:
@@ -107,9 +106,8 @@ class Player():
                 TmpRad = tmpAngle * 0.0174533
                 yVelocity = math.sin(TmpRad)
                 xVelocity = math.cos(TmpRad)
-                totalVelo = xVelocity + yVelocity
-                xVelocity = xVelocity * totalVelo * self.speed
-                yVelocity = yVelocity * totalVelo * self.speed
+                xVelocity = xVelocity * self.speed
+                yVelocity = yVelocity * self.speed
                 if self.angle <= 90 or 180 < self.angle <= 270:
                     self.rect.move_ip(xVelocity * xAngle,yVelocity * yAngle)
                 else:
@@ -197,9 +195,8 @@ class Bullet():
             TmpRad = tmpAngle * 0.0174533
             self.yVelocity = math.sin(TmpRad)
             self.xVelocity = math.cos(TmpRad)
-            totalVelo = self.xVelocity + self.yVelocity
-            self.xVelocity = self.xVelocity * totalVelo * self.speed
-            self.yVelocity = self.yVelocity * totalVelo * self.speed
+            self.xVelocity = self.xVelocity * self.speed
+            self.yVelocity = self.yVelocity * self.speed
             if player.angle <= 90 or 180 < player.angle <= 270:
                 self.xVelocity = self.xVelocity * xAngle
                 self.yVelocity = self.yVelocity * yAngle
@@ -243,9 +240,8 @@ class Bullet2():
             TmpRad = tmpAngle * 0.0174533
             self.yVelocity = math.sin(TmpRad)
             self.xVelocity = math.cos(TmpRad)
-            totalVelo = self.xVelocity + self.yVelocity
-            self.xVelocity = self.xVelocity * totalVelo * self.speed
-            self.yVelocity = self.yVelocity * totalVelo * self.speed
+            self.xVelocity = self.xVelocity * self.speed
+            self.yVelocity = self.yVelocity * self.speed
             if player2.angle <= 90 or 180 < player2.angle <= 270:
                 self.xVelocity = self.xVelocity * xAngle
                 self.yVelocity = self.yVelocity * yAngle
@@ -297,9 +293,8 @@ class Player2():
                 TmpRad = tmpAngle * 0.0174533
                 yVelocity = math.sin(TmpRad)
                 xVelocity = math.cos(TmpRad)
-                totalVelo = xVelocity + yVelocity
-                xVelocity = xVelocity * totalVelo * self.speed
-                yVelocity = yVelocity * totalVelo * self.speed
+                xVelocity = xVelocity * self.speed
+                yVelocity = yVelocity * self.speed
                 if self.angle <= 90 or 180 < self.angle <= 270:
                     self.rect.move_ip(xVelocity * xAngle,yVelocity * yAngle)
                 else:
@@ -324,9 +319,8 @@ class Player2():
                 TmpRad = tmpAngle * 0.0174533
                 yVelocity = math.sin(TmpRad)
                 xVelocity = math.cos(TmpRad)
-                totalVelo = xVelocity + yVelocity
-                xVelocity = xVelocity * totalVelo * self.speed
-                yVelocity = yVelocity * totalVelo * self.speed
+                xVelocity = xVelocity * self.speed
+                yVelocity = yVelocity * self.speed
                 if self.angle <= 90 or 180 < self.angle <= 270:
                     self.rect.move_ip(xVelocity * xAngle,yVelocity * yAngle)
                 else:
