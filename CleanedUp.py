@@ -58,6 +58,7 @@ class Player():
         self.facingLeft = 1
         self.boost = 50
         self.speed = baseSpeed
+        self.mask = pygame.mask.from_surface(self.image)
     
     # Move the sprite based on user keypresses
     def update(self, pressed_keys):
@@ -120,10 +121,13 @@ class Player():
                     HitNoise.play()
 
             # Asteroid collision
-            if (asteroid.rect.left<=self.rect.left) and (asteroid.rect.right>=self.rect.right) and (asteroid.rect.top <= self.rect.top) and (asteroid.rect.bottom >= self.rect.bottom):
+            offset_x = asteroid.rect.x - self.rect.x
+            offset_y = asteroid.rect.y - self.rect.y
+            overlap = asteroid.mask.overlap(self.mask, (offset_x, offset_y))
+            if overlap:
                 print("hit")
                 self.health-=1
-                asteroid.rect.left = -75
+                asteroid.rect.left = -100
                 if self.health == 0:
                     KillNoise.play()
                     self.dead = 1
@@ -205,6 +209,7 @@ class Player2():
         self.facingLeft = 0
         self.boost = 50
         self.speed = 1*baseSpeed
+        self.mask = pygame.mask.from_surface(self.image)
     
     def update(self, pressed_keys):
         if self.dead==0:
@@ -263,10 +268,13 @@ class Player2():
                     HitNoise.play()
 
             # Asteroid collision
-            if (asteroid.rect.left<=self.rect.left) and (asteroid.rect.right>=self.rect.right) and (asteroid.rect.top <= self.rect.top) and (asteroid.rect.bottom >= self.rect.bottom):
+            offset_x = asteroid.rect.x - self.rect.x
+            offset_y = asteroid.rect.y - self.rect.y
+            overlap = asteroid.mask.overlap(self.mask, (offset_x, offset_y))
+            if overlap:
                 print("hit")
                 self.health-=1
-                asteroid.rect.left = -75
+                asteroid.rect.left = -100
                 if self.health == 0:
                     KillNoise.play()
                     self.dead = 1
@@ -386,8 +394,7 @@ class Asteroid():
         self.rect = self.image.get_rect()
         self.rect.bottom = SCREEN_HEIGHT
         self.rect.left = -75
-        self.health = 5
-        self.dead = 0
+        self.mask = pygame.mask.from_surface(self.image)
 
         # Boundaries for asteroid
         if self.rect.left < -200:
