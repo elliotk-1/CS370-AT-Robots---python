@@ -145,6 +145,8 @@ class Player():
             if self.rect.bottom >= SCREEN_HEIGHT:
                 self.rect.bottom = SCREEN_HEIGHT 
 
+            self.image = pygame.transform.scale(self.image, (self.size, self.size))
+
             # Bullet collision
             if ((((bullet2.rect.right <= self.rect.right) and (bullet2.rect.right >= self.rect.left)) or ((bullet2.rect.left >= self.rect.left) and (bullet2.rect.left <= self.rect.right))) and (((bullet2.rect.top >= self.rect.top) and (bullet2.rect.top <= self.rect.bottom)) or ((bullet2.rect.bottom <= self.rect.bottom) and (bullet2.rect.bottom >= self.rect.top)))) and bullet2.exist == 1:
                 print("hit")
@@ -166,8 +168,8 @@ class Bullet():
         super(Bullet, self).__init__()
         self.surf = pygame.Surface((player.size/2, player.size/10))
         self.surf.fill((0, 0, 250))
-        self.image = self.surf
-        self.rect = self.surf.get_rect()
+        self.image = pygame.image.load('bullet1.png').convert_alpha()
+        self.rect = self.image.get_rect()
         self.exist = 0
         self.speed = 4*player.speed
         self.xVelocity = 0
@@ -175,6 +177,7 @@ class Bullet():
     
     # Move the bullet based on direction of fire
     def update(self):
+        self.speed = 4*player.speed
         if self.xVelocity == 0:
             if player.angle<=90:
                 tmpAngle = player.angle
@@ -204,6 +207,7 @@ class Bullet():
                 tmpVelo = self.xVelocity
                 self.xVelocity = self.yVelocity * xAngle
                 self.yVelocity = tmpVelo * yAngle
+            self.image = pygame.transform.scale(self.image, (player.size/2, player.size/10))
             self.bulletrotation = pygame.transform.rotate(bullet.image,player.angle)
         self.rect.move_ip(self.xVelocity,self.yVelocity)
 # Copy of Bullet1
@@ -212,14 +216,15 @@ class Bullet2():
         super(Bullet2, self).__init__()
         self.surf = pygame.Surface((player2.size/2, player2.size/10))
         self.surf.fill((250, 0, 0))
-        self.image = self.surf
-        self.rect = self.surf.get_rect()
+        self.image = pygame.image.load('bullet2.png').convert_alpha()
+        self.rect = self.image.get_rect()
         self.exist = 0
         self.speed = 4*player2.speed
         self.xVelocity = 0
         self.yVelocity = 0
     
     def update(self):
+        self.speed = 4*player.speed
         if self.xVelocity == 0:
             if player2.angle<=90:
                 tmpAngle = player2.angle
@@ -249,6 +254,7 @@ class Bullet2():
                 tmpVelo = self.xVelocity
                 self.xVelocity = self.yVelocity * xAngle
                 self.yVelocity = tmpVelo * yAngle
+            self.image = pygame.transform.scale(self.image, (player.size/2, player.size/10))
             self.bulletrotation = pygame.transform.rotate(bullet2.image,player2.angle)
         self.rect.move_ip(self.xVelocity,self.yVelocity)
 
@@ -356,6 +362,8 @@ class Player2():
                 self.rect.top = 0
             if self.rect.bottom >= SCREEN_HEIGHT:
                 self.rect.bottom = SCREEN_HEIGHT
+            
+            self.image = pygame.transform.scale(self.image, (self.size, self.size))
 
             if ((((bullet.rect.right <= self.rect.right) and (bullet.rect.right >= self.rect.left)) or ((bullet.rect.left >= self.rect.left) and (bullet.rect.left <= self.rect.right))) and (((bullet.rect.top >= self.rect.top) and (bullet.rect.top <= self.rect.bottom)) or ((bullet.rect.bottom <= self.rect.bottom) and (bullet.rect.bottom >= self.rect.top)))) and bullet.exist == 1:
                 print("hit")
