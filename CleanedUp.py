@@ -378,10 +378,11 @@ class Player2Health():
 class Asteroid():
     def __init__(self):
         super(Asteroid, self).__init__()
-        self.surf = pygame.Surface((150,150))
+        self.size = SCREEN_HEIGHT/4
+        self.surf = pygame.Surface((self.size, self.size))
         self.surf.fill((255, 255, 150))
         self.image = pygame.image.load('asteroid2.png').convert_alpha()
-        self.image = pygame.transform.scale(self.image, (150,150))
+        self.image = pygame.transform.scale(self.image, (self.size,self.size))
         self.rect = self.image.get_rect()
         self.rect.bottom = SCREEN_HEIGHT
         self.rect.left = -75
@@ -475,6 +476,11 @@ while running:
         SCREEN_HEIGHT -= UI_HEIGHT
         bg=pygame.image.load('background.png').convert()
         bg=pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        bgX = 0
+        bgX2 = bg.get_width()
+        def redrawWindow():
+            screen.blit(bg, (bgX,0))
+            screen.blit(bg, (bgX2,0))
         bgRect=bg.get_rect()
         player.rect.bottom = tmpbottom
         player.rect.right = tmpright
@@ -482,10 +488,12 @@ while running:
         player2.rect.right = tmp2right
         player.size = SCREEN_HEIGHT/6
         player2.size = SCREEN_HEIGHT/6
+        asteroid.size = SCREEN_HEIGHT/4
         player.rect.update((player.rect.left,player.rect.top),(player.size,player.size))
         player2.rect.update((player2.rect.left,player2.rect.top),(player2.size,player2.size))
         bullet.rect.update((bullet.rect.left,bullet.rect.top),(player.size/2, player.size/10))
         bullet2.rect.update((bullet2.rect.left,bullet2.rect.top),(player2.size/2, player2.size/10))
+        asteroid.rect.update((asteroid.rect.left,asteroid.rect.top),(asteroid.size,asteroid.size))
         if player.rect.bottom>SCREEN_HEIGHT:
             player.rect.bottom = SCREEN_HEIGHT
         if player.rect.right>SCREEN_WIDTH:
@@ -572,10 +580,6 @@ while running:
             bullet2.updateL()
         elif bullet2.facingLeft==0:
             bullet2.updateR()
-
-    # Fill the screen with background image
-    #screen.fill((0, 0, 0))
-    #screen.blit(backgroundImage,backgroundImageRect)
 
     #Update UI
     Info1H = font.render("Magenta Health:", True, (236, 240, 241))
