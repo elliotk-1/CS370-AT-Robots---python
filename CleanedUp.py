@@ -5,8 +5,7 @@ from turtle import Screen, window_height
 import pygame
 from pygame import *
 import time
-import os
-import sys
+import math
 
 pygame.mixer.init()
 
@@ -27,27 +26,19 @@ from pygame.locals import (
     K_LALT
 )
 
-def resource_path(relative_path):
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-    return os.path.join(base_path, relative_path)
-
-
 # Set sounds and music
-BlasterNoise=pygame.mixer.Sound(resource_path('blaster.wav'))
-KillNoise=pygame.mixer.Sound(resource_path('Kill.wav'))
-HitNoise=pygame.mixer.Sound(resource_path('Hit.wav'))
-winSound=pygame.mixer.Sound(resource_path('Victory.wav'))
-mixer.music.load(resource_path('BackgroundMusic.wav'))
+BlasterNoise=pygame.mixer.Sound('blaster.wav')
+KillNoise=pygame.mixer.Sound('Kill.wav')
+HitNoise=pygame.mixer.Sound('Hit.wav')
+winSound=pygame.mixer.Sound('Victory.wav')
+mixer.music.load('BackgroundMusic.wav')
 mixer.music.play(-1)
 
 # Define constants for the screen width and height
 screen = pygame.display.set_mode((800,600))
 SCREEN_WIDTH, SCREEN_HEIGHT = screen.get_size()
 UI_HEIGHT = 70
-baseSpeed = (SCREEN_HEIGHT + SCREEN_WIDTH)/700
+baseSpeed = ((SCREEN_HEIGHT + SCREEN_WIDTH)/700)*3
 
 clock = pygame.time.Clock()
 
@@ -58,29 +49,81 @@ class Player():
         self.size = SCREEN_HEIGHT/6
         self.surf = pygame.Surface((self.size, self.size))
         self.surf.fill((255, 255, 150))
-        self.image = pygame.image.load(resource_path('spaceship1R.png')).convert_alpha()
+        self.image = pygame.image.load('spaceship1.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
         self.rect = self.image.get_rect()
         self.health = 5
         self.dead = 0
         self.rect.bottom = SCREEN_HEIGHT
         self.rect.right = SCREEN_WIDTH
-        self.facingLeft = 1
         self.boost = 50
         self.speed = baseSpeed
         self.mask = pygame.mask.from_surface(self.image)
+        self.angle = 180
     
     # Move the sprite based on user keypresses
     def update(self, pressed_keys):
         if self.dead == 0:
             if pressed_keys[K_UP]:
-                self.rect.move_ip(0, -(self.speed+2))
+                if self.angle<=90:
+                    tmpAngle = self.angle
+                    xAngle=1
+                    yAngle=-1
+                elif self.angle<=180:
+                    tmpAngle = self.angle - 90
+                    xAngle=-1
+                    yAngle=-1
+                elif self.angle<=270:
+                    tmpAngle = self.angle - 180
+                    xAngle=-1
+                    yAngle=1
+                else:
+                    tmpAngle = self.angle - 270
+                    xAngle=1
+                    yAngle=1
+                TmpRad = tmpAngle * 0.0174533
+                yVelocity = math.sin(TmpRad)
+                xVelocity = math.cos(TmpRad)
+                xVelocity = xVelocity * self.speed
+                yVelocity = yVelocity * self.speed
+                if self.angle <= 90 or 180 < self.angle <= 270:
+                    self.rect.move_ip(xVelocity * xAngle,yVelocity * yAngle)
+                else:
+                    self.rect.move_ip(yVelocity * xAngle,xVelocity * yAngle)
             if pressed_keys[K_DOWN]:
-                self.rect.move_ip(0, self.speed+2)
+                if self.angle<=90:
+                    tmpAngle = self.angle
+                    xAngle=-1
+                    yAngle=1
+                elif self.angle<=180:
+                    tmpAngle = self.angle - 90
+                    xAngle=1
+                    yAngle=1
+                elif self.angle<=270:
+                    tmpAngle = self.angle - 180
+                    xAngle=1
+                    yAngle=-1
+                else:
+                    tmpAngle = self.angle - 270
+                    xAngle=-1
+                    yAngle=-1
+                TmpRad = tmpAngle * 0.0174533
+                yVelocity = math.sin(TmpRad)
+                xVelocity = math.cos(TmpRad)
+                xVelocity = xVelocity * self.speed
+                yVelocity = yVelocity * self.speed
+                if self.angle <= 90 or 180 < self.angle <= 270:
+                    self.rect.move_ip(xVelocity * xAngle,yVelocity * yAngle)
+                else:
+                    self.rect.move_ip(yVelocity * xAngle,xVelocity * yAngle)
             if pressed_keys[K_LEFT]:
-                self.rect.move_ip(-(self.speed+2), 0)
+                    self.angle+=3
             if pressed_keys[K_RIGHT]:
-                self.rect.move_ip(self.speed+2, 0)
+                    self.angle-=3
+            if self.angle < 0:
+                self.angle+=360
+            if self.angle >= 360:
+                self.angle-=360
             if pressed_keys[K_RSHIFT]:
                 if self.boost > 0:
                     self.speed = 2*baseSpeed
@@ -103,17 +146,8 @@ class Player():
                 self.rect.right = SCREEN_WIDTH
             if self.rect.top <= 0:
                 self.rect.top = 0
-            if self.rect.bottom >= SCREEN_HEIGHT:
-                self.rect.bottom = SCREEN_HEIGHT 
-
-            # Change sprite direction
-            if self.facingLeft==0:
-                self.image = pygame.image.load(resource_path('spaceship1R.png')).convert_alpha()
-            if player.facingLeft==1:
-                self.image = pygame.image.load(resource_path('spaceship1L.png')).convert_alpha()
-
-            # Keep size uniform
-            self.image = pygame.transform.scale(self.image, (self.size, self.size))
+            if self.rect.bottom >= SCREEN_HEIGHT-10:
+                self.rect.bottom = SCREEN_HEIGHT-10
 
             # Bullet collision
             if ((((bullet2.rect.right <= self.rect.right) and (bullet2.rect.right >= self.rect.left)) or ((bullet2.rect.left >= self.rect.left) and (bullet2.rect.left <= self.rect.right))) and (((bullet2.rect.top >= self.rect.top) and (bullet2.rect.top <= self.rect.bottom)) or ((bullet2.rect.bottom <= self.rect.bottom) and (bullet2.rect.bottom >= self.rect.top)))) and bullet2.exist == 1:
@@ -157,23 +191,43 @@ class Bullet():
         self.image = self.surf
         self.rect = self.surf.get_rect()
         self.exist = 0
-        self.facingLeft = 1
+        self.speed = 4*player.speed
+        self.xVelocity = 0
+        self.yVelocity = 0
     
     # Move the bullet based on direction of fire
-    def updateR(self):
-        if self.rect.right < (SCREEN_WIDTH + (player.size/2)+5) and self.rect.right != 0:
-            self.rect.move_ip(4*baseSpeed,0)
-            self.image = pygame.image.load(resource_path('bullet1R.png')).convert_alpha()
-            self.image = pygame.transform.scale(self.image, (player.size/2, player.size/10))
-        else:
-            self.rect.bottom = -9999999
-    def updateL(self):
-        if self.rect.right > 0 and self.rect.right != (SCREEN_WIDTH + (player.size/2)+5):
-            self.rect.move_ip(-4*baseSpeed,0)
-            self.image = pygame.image.load(resource_path('bullet1L.png')).convert_alpha()
-            self.image = pygame.transform.scale(self.image, (player.size/2, player.size/10))
-        else:
-            self.rect.bottom = -9999999
+    def update(self):
+        if self.xVelocity == 0:
+            if player.angle<=90:
+                tmpAngle = player.angle
+                xAngle=1
+                yAngle=-1
+            elif player.angle<=180:
+                tmpAngle = player.angle - 90
+                xAngle=-1
+                yAngle=-1
+            elif player.angle<=270:
+                tmpAngle = player.angle - 180
+                xAngle=-1
+                yAngle=1
+            else:
+                tmpAngle = player.angle - 270
+                xAngle=1
+                yAngle=1
+            TmpRad = tmpAngle * 0.0174533
+            self.yVelocity = math.sin(TmpRad)
+            self.xVelocity = math.cos(TmpRad)
+            self.xVelocity = self.xVelocity * self.speed
+            self.yVelocity = self.yVelocity * self.speed
+            if player.angle <= 90 or 180 < player.angle <= 270:
+                self.xVelocity = self.xVelocity * xAngle
+                self.yVelocity = self.yVelocity * yAngle
+            else:
+                tmpVelo = self.xVelocity
+                self.xVelocity = self.yVelocity * xAngle
+                self.yVelocity = tmpVelo * yAngle
+            self.bulletrotation = pygame.transform.rotate(bullet.image,player.angle)
+        self.rect.move_ip(self.xVelocity,self.yVelocity)
 
 # Copy of Bullet1
 class Bullet2():
@@ -184,22 +238,42 @@ class Bullet2():
         self.image = self.surf
         self.rect = self.surf.get_rect()
         self.exist = 0
-        self.facingLeft = 0
+        self.speed = 4*player2.speed
+        self.xVelocity = 0
+        self.yVelocity = 0
     
-    def updateR(self):
-        if self.rect.right < (SCREEN_WIDTH + (player2.size/2)+5) and self.rect.right != 0:
-            self.rect.move_ip(4*baseSpeed,0)
-            self.image = pygame.image.load(resource_path('bullet2R.png')).convert_alpha()
-            self.image = pygame.transform.scale(self.image, (player2.size/2, player2.size/10))
-        else:
-            self.rect.bottom = -99999999
-    def updateL(self):
-        if self.rect.right > 0 and self.rect.right != (SCREEN_WIDTH + (player2.size/2)+5):
-            self.rect.move_ip(-4*baseSpeed,0)
-            self.image = pygame.image.load(resource_path('bullet2L.png')).convert_alpha()
-            self.image = pygame.transform.scale(self.image, (player2.size/2, player2.size/10))
-        else:
-            self.rect.bottom = -9999999
+    def update(self):
+        if self.xVelocity == 0:
+            if player2.angle<=90:
+                tmpAngle = player2.angle
+                xAngle=1
+                yAngle=-1
+            elif player2.angle<=180:
+                tmpAngle = player2.angle - 90
+                xAngle=-1
+                yAngle=-1
+            elif player2.angle<=270:
+                tmpAngle = player2.angle - 180
+                xAngle=-1
+                yAngle=1
+            else:
+                tmpAngle = player2.angle - 270
+                xAngle=1
+                yAngle=1
+            TmpRad = tmpAngle * 0.0174533
+            self.yVelocity = math.sin(TmpRad)
+            self.xVelocity = math.cos(TmpRad)
+            self.xVelocity = self.xVelocity * self.speed
+            self.yVelocity = self.yVelocity * self.speed
+            if player2.angle <= 90 or 180 < player2.angle <= 270:
+                self.xVelocity = self.xVelocity * xAngle
+                self.yVelocity = self.yVelocity * yAngle
+            else:
+                tmpVelo = self.xVelocity
+                self.xVelocity = self.yVelocity * xAngle
+                self.yVelocity = tmpVelo * yAngle
+            self.bulletrotation = pygame.transform.rotate(bullet2.image,player2.angle)
+        self.rect.move_ip(self.xVelocity,self.yVelocity)
 
 # Initialize pygame
 pygame.init()
@@ -211,26 +285,79 @@ class Player2():
         self.size = SCREEN_HEIGHT/6
         self.surf = pygame.Surface((self.size, self.size))
         self.surf.fill((255, 255, 150))
-        self.image = pygame.image.load(resource_path('spaceship1L.png')).convert_alpha()
+        self.image = pygame.image.load('spaceship2.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (self.size, self.size))
         self.rect = self.image.get_rect()
         self.health = 5
         self.dead = 0
-        self.facingLeft = 0
+    
         self.boost = 50
         self.speed = 1*baseSpeed
         self.mask = pygame.mask.from_surface(self.image)
+        self.angle = 0
     
     def update(self, pressed_keys):
         if self.dead==0:
             if pressed_keys[K_w]:
-                self.rect.move_ip(0, -(self.speed+2))
+                if self.angle<=90:
+                    tmpAngle = self.angle
+                    xAngle=1
+                    yAngle=-1
+                elif self.angle<=180:
+                    tmpAngle = self.angle - 90
+                    xAngle=-1
+                    yAngle=-1
+                elif self.angle<=270:
+                    tmpAngle = self.angle - 180
+                    xAngle=-1
+                    yAngle=1
+                else:
+                    tmpAngle = self.angle - 270
+                    xAngle=1
+                    yAngle=1
+                TmpRad = tmpAngle * 0.0174533
+                yVelocity = math.sin(TmpRad)
+                xVelocity = math.cos(TmpRad)
+                xVelocity = xVelocity * self.speed
+                yVelocity = yVelocity * self.speed
+                if self.angle <= 90 or 180 < self.angle <= 270:
+                    self.rect.move_ip(xVelocity * xAngle,yVelocity * yAngle)
+                else:
+                    self.rect.move_ip(yVelocity * xAngle,xVelocity * yAngle)
             if pressed_keys[K_s]:
-                self.rect.move_ip(0, self.speed+2)
+                if self.angle<=90:
+                    tmpAngle = self.angle
+                    xAngle=-1
+                    yAngle=1
+                elif self.angle<=180:
+                    tmpAngle = self.angle - 90
+                    xAngle=1
+                    yAngle=1
+                elif self.angle<=270:
+                    tmpAngle = self.angle - 180
+                    xAngle=1
+                    yAngle=-1
+                else:
+                    tmpAngle = self.angle - 270
+                    xAngle=-1
+                    yAngle=-1
+                TmpRad = tmpAngle * 0.0174533
+                yVelocity = math.sin(TmpRad)
+                xVelocity = math.cos(TmpRad)
+                xVelocity = xVelocity * self.speed
+                yVelocity = yVelocity * self.speed
+                if self.angle <= 90 or 180 < self.angle <= 270:
+                    self.rect.move_ip(xVelocity * xAngle,yVelocity * yAngle)
+                else:
+                    self.rect.move_ip(yVelocity * xAngle,xVelocity * yAngle)
             if pressed_keys[K_a]:
-                self.rect.move_ip(-(self.speed+2), 0)
+                self.angle+=3
             if pressed_keys[K_d]:
-                self.rect.move_ip(self.speed+2, 0)
+                self.angle-=3
+            if self.angle < 0:
+                self.angle+=360
+            if self.angle >= 360:
+                self.angle-=360
             if pressed_keys[K_LSHIFT]:
                 if self.boost > 0:
                     self.speed = 2*baseSpeed
@@ -252,16 +379,8 @@ class Player2():
                 self.rect.right = SCREEN_WIDTH
             if self.rect.top <= 0:
                 self.rect.top = 0
-            if self.rect.bottom >= SCREEN_HEIGHT:
-                self.rect.bottom = SCREEN_HEIGHT
-
-            if self.facingLeft==0:
-                self.image = pygame.image.load(resource_path('spaceship2R.png')).convert_alpha()
-
-            if self.facingLeft==1:
-                self.image = pygame.image.load(resource_path('spaceship2L.png')).convert_alpha()
-
-            self.image = pygame.transform.scale(self.image, (self.size, self.size))
+            if self.rect.bottom >= SCREEN_HEIGHT-10:
+                self.rect.bottom = SCREEN_HEIGHT-10
 
             if ((((bullet.rect.right <= self.rect.right) and (bullet.rect.right >= self.rect.left)) or ((bullet.rect.left >= self.rect.left) and (bullet.rect.left <= self.rect.right))) and (((bullet.rect.top >= self.rect.top) and (bullet.rect.top <= self.rect.bottom)) or ((bullet.rect.bottom <= self.rect.bottom) and (bullet.rect.bottom >= self.rect.top)))) and bullet.exist == 1:
                 print("hit")
@@ -301,7 +420,7 @@ class deadShip():
         super(deadShip, self).__init__()
         self.surf = pygame.Surface((75, 25))
         self.surf.fill((255, 255, 150))
-        self.image = pygame.image.load(resource_path('DeadShip.png')).convert_alpha()
+        self.image = pygame.image.load('DeadShip.png').convert_alpha()
         self.rect = self.image.get_rect()
 
     def update(self):
@@ -316,7 +435,7 @@ class deadShip2():
         super(deadShip2, self).__init__()
         self.surf = pygame.Surface((75, 25))
         self.surf.fill((255, 255, 150))
-        self.image = pygame.image.load(resource_path('DeadShip.png')).convert_alpha()
+        self.image = pygame.image.load('DeadShip.png').convert_alpha()
         self.rect = self.image.get_rect()
 
     def update(self):
@@ -331,7 +450,7 @@ class PlayerLost():
         super(PlayerLost, self).__init__()
         self.surf = pygame.Surface((150, 100))
         self.surf.fill((255, 255, 150))
-        self.image = pygame.image.load(resource_path('PlayerLost.png')).convert_alpha()
+        self.image = pygame.image.load('PlayerLost.png').convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.top = 270
         self.rect.left = 278
@@ -342,7 +461,7 @@ class Player2Lost():
         super(Player2Lost, self).__init__()
         self.surf = pygame.Surface((150, 100))
         self.surf.fill((255, 255, 150))
-        self.image = pygame.image.load(resource_path('Player2Lost.png')).convert_alpha()
+        self.image = pygame.image.load('Player2Lost.png').convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.top = 270
         self.rect.left = 278
@@ -352,22 +471,22 @@ class PlayerHealth():
         super(PlayerHealth, self).__init__()
         self.surf = pygame.Surface((150,100))
         self.surf.fill((255,255,255))
-        self.image = pygame.image.load(resource_path('Health5.png')).convert_alpha()
+        self.image = pygame.image.load('Health5.png').convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.top = SCREEN_HEIGHT+10
         self.rect.left = 175
     
     def update(self):
         if player.health == 4:
-            self.image = pygame.image.load(resource_path('Health4.png')).convert_alpha()
+            self.image = pygame.image.load('Health4.png').convert_alpha()
         elif player.health == 3:
-            self.image = pygame.image.load(resource_path('Health3.png')).convert_alpha()
+            self.image = pygame.image.load('Health3.png').convert_alpha()
         elif player.health == 2:
-            self.image = pygame.image.load(resource_path('Health2.png')).convert_alpha()
+            self.image = pygame.image.load('Health2.png').convert_alpha()
         elif player.health == 1:
-            self.image = pygame.image.load(resource_path('Health1.png')).convert_alpha()
+            self.image = pygame.image.load('Health1.png').convert_alpha()
         elif player.health == 0:
-            self.image = pygame.image.load(resource_path('Health0.png')).convert_alpha()
+            self.image = pygame.image.load('Health0.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (150, 20))
 
 class Player2Health():
@@ -375,22 +494,22 @@ class Player2Health():
         super(Player2Health, self).__init__()
         self.surf = pygame.Surface((150,100))
         self.surf.fill((255,255,255))
-        self.image = pygame.image.load(resource_path('Health5.png')).convert_alpha()
+        self.image = pygame.image.load('Health5.png').convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.top = SCREEN_HEIGHT+10
         self.rect.left = (SCREEN_WIDTH/2)+125
 
     def update(self):
         if player2.health == 4:
-            self.image = pygame.image.load(resource_path('Health4.png')).convert_alpha()
+            self.image = pygame.image.load('Health4.png').convert_alpha()
         if player2.health == 3:
-            self.image = pygame.image.load(resource_path('Health3.png')).convert_alpha()
+            self.image = pygame.image.load('Health3.png').convert_alpha()
         if player2.health == 2:
-            self.image = pygame.image.load(resource_path('Health2.png')).convert_alpha()
+            self.image = pygame.image.load('Health2.png').convert_alpha()
         if player2.health == 1:
-            self.image = pygame.image.load(resource_path('Health1.png')).convert_alpha()
+            self.image = pygame.image.load('Health1.png').convert_alpha()
         if player2.health == 0:
-            self.image = pygame.image.load(resource_path('Health0.png')).convert_alpha()
+            self.image = pygame.image.load('Health0.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (150, 20))
 
 class Asteroid():
@@ -399,7 +518,7 @@ class Asteroid():
         self.size = SCREEN_HEIGHT/4
         self.surf = pygame.Surface((self.size, self.size))
         self.surf.fill((255, 255, 150))
-        self.image = pygame.image.load(resource_path('asteroid2.png')).convert_alpha()
+        self.image = pygame.image.load('asteroid2.png').convert_alpha()
         self.image = pygame.transform.scale(self.image, (self.size,self.size))
         self.rect = self.image.get_rect()
         self.rect.bottom = SCREEN_HEIGHT
@@ -437,7 +556,7 @@ direction = 1
 speed_x = randint(0,5)
 speed_y = randint(0,5)
 speed = 30
-bg = pygame.image.load(resource_path('background.png')).convert()
+bg = pygame.image.load('background.png').convert()
 bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 bgRect = bg.get_rect()
 bgX = 0
@@ -491,7 +610,7 @@ while running:
         tmp2right = (player2.rect.right / SCREEN_WIDTH) * tmpSW
         (SCREEN_WIDTH, SCREEN_HEIGHT) = screen.get_size()
         SCREEN_HEIGHT -= UI_HEIGHT
-        bg=pygame.image.load(resource_path('background.png')).convert()
+        bg=pygame.image.load('background.png').convert()
         bg=pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
         bgX = 0
         bgX2 = bg.get_width()
@@ -519,7 +638,7 @@ while running:
             player2.rect.bottom = SCREEN_HEIGHT
         if player2.rect.right>SCREEN_WIDTH:
             player2.rect.right=SCREEN_WIDTH
-        baseSpeed = (SCREEN_HEIGHT + SCREEN_WIDTH)/700
+        baseSpeed = ((SCREEN_HEIGHT + SCREEN_WIDTH)/700)*3
         if baseSpeed<1:
             baseSpeed=1
         player.speed = baseSpeed
@@ -538,41 +657,22 @@ while running:
                 playerLost.rect.left = SCREEN_WIDTH/2-122
                 player2Lost.rect.top = SCREEN_HEIGHT/2-30
                 player2Lost.rect.left = SCREEN_WIDTH/2-122
-                if event.key == K_RIGHT:
-                    player.facingLeft=0
-                elif event.key ==K_LEFT:
-                    player.facingLeft=1
-                elif event.key == K_RALT:
-                    if bullet.rect.right >= SCREEN_WIDTH+(player2.size/2) or bullet.rect.right <= 0 or bullet.exist==0:
+                if event.key == K_RALT:
+                    if bullet.rect.right >= SCREEN_WIDTH+(player2.size/2) or bullet.rect.right <= 0 or bullet.rect.bottom < 0 or bullet.rect.top >SCREEN_HEIGHT or bullet.exist==0:
                         bullet.exist=1
                         BlasterNoise.play()
-                        if player.facingLeft==0:
-                            bullet.facingLeft=0
-                            bullet.rect.left=player.rect.right-(player.size/10)
-                            bullet.rect.top=player.rect.top + (player.size/2) - (player.size/20)
-                        if player.facingLeft==1:
-                            bullet.facingLeft=1
-                            bullet.rect.left=player.rect.left+(player.size/10)
-                            bullet.rect.top=player.rect.top + (player.size/2) - (player.size/20)
-
+                        bullet.xVelocity = 0
+                        bullet.rect.top = player.rect.top + (player.size/2)
+                        bullet.rect.left = player.rect.left + (player.size/2)
             #Player2
             if player2.dead == 0:
-                if event.key == K_a:
-                    player2.facingLeft=1
-                elif event.key ==K_d:
-                    player2.facingLeft=0
-                elif event.key == K_LALT:
-                    if bullet2.rect.right >= SCREEN_WIDTH+(player2.size/2) or bullet2.rect.right <= 0 or bullet2.exist==0:
+                if event.key == K_LALT:
+                    if bullet2.rect.right >= SCREEN_WIDTH+(player2.size/2) or bullet2.rect.right <= 0 or bullet2.rect.bottom < 0 or bullet2.rect.top >SCREEN_HEIGHT or bullet2.exist==0:
                         bullet2.exist=1
                         BlasterNoise.play()
-                        if player2.facingLeft==0:
-                            bullet2.facingLeft=0
-                            bullet2.rect.left=player2.rect.right-(player2.size/10)
-                            bullet2.rect.top=player2.rect.top + (player2.size/2) - (player2.size/20)
-                        if player2.facingLeft==1:
-                            bullet2.facingLeft=1
-                            bullet2.rect.left=player2.rect.left+(player2.size/10)
-                            bullet2.rect.top=player2.rect.top + (player2.size/2) - (player2.size/20)
+                        bullet2.xVelocity = 0
+                        bullet2.rect.top = player2.rect.top + (player2.size/2)
+                        bullet2.rect.left = player2.rect.left + (player2.size/2)
             # If the Esc key is pressed, then exit the main loop
             if event.key == K_ESCAPE:
                 running = False
@@ -588,15 +688,9 @@ while running:
     deadship.update()
     deadship2.update()
     if bullet.exist==1:
-        if bullet.facingLeft==1:
-            bullet.updateL()
-        elif bullet.facingLeft==0:
-            bullet.updateR()
+        bullet.update()
     if bullet2.exist==1:
-        if bullet2.facingLeft==1:
-            bullet2.updateL()
-        elif bullet2.facingLeft==0:
-            bullet2.updateR()
+        bullet2.update()
 
     #Update UI
     Info1H = font.render("Magenta Health:", True, (236, 240, 241))
@@ -621,12 +715,10 @@ while running:
     pygame.draw.rect(screen, (238, 255, 0), pygame.Rect(SCREEN_WIDTH/2+100, SCREEN_HEIGHT+40, player2.boost*1.5, 20))
 
     # Draw the objects on the screen
-    screen.blit(player.image, player.rect)
-    screen.blit(player2.image,player2.rect)
-    if bullet.exist==1:
-        screen.blit(bullet.image, bullet.rect)
-    if bullet2.exist==1:
-        screen.blit(bullet2.image,bullet2.rect)
+    playerrotation = pygame.transform.rotate(player.image,player.angle)
+    screen.blit(playerrotation, player.rect)
+    player2rotation = pygame.transform.rotate(player2.image,player2.angle)
+    screen.blit(player2rotation,player2.rect)
     if player.dead == 1:
         screen.blit(deadship.image, deadship.rect)
         screen.blit(playerLost.image, playerLost.rect)
@@ -638,4 +730,4 @@ while running:
     # Update the display
     pygame.display.flip()
     clock = pygame.time.Clock()
-    clock.tick(360)
+    clock.tick(60)
