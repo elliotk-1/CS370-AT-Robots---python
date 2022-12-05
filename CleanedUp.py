@@ -188,8 +188,8 @@ class Bullet():
         super(Bullet, self).__init__()
         self.surf = pygame.Surface((player.size/2, player.size/10))
         self.surf.fill((0, 0, 250))
-        self.image = self.surf
-        self.rect = self.surf.get_rect()
+        self.image = pygame.image.load('bullet1R.png').convert_alpha()
+        self.rect = self.image.get_rect()
         self.exist = 0
         self.speed = 4*player.speed
         self.xVelocity = 0
@@ -197,6 +197,7 @@ class Bullet():
     
     # Move the bullet based on direction of fire
     def update(self):
+        self.speed = 4*player.speed
         if self.xVelocity == 0:
             if player.angle<=90:
                 tmpAngle = player.angle
@@ -226,6 +227,7 @@ class Bullet():
                 tmpVelo = self.xVelocity
                 self.xVelocity = self.yVelocity * xAngle
                 self.yVelocity = tmpVelo * yAngle
+            self.image = pygame.transform.scale(self.image, (player.size/2, player.size/10))
             self.bulletrotation = pygame.transform.rotate(bullet.image,player.angle)
         self.rect.move_ip(self.xVelocity,self.yVelocity)
 
@@ -235,14 +237,15 @@ class Bullet2():
         super(Bullet2, self).__init__()
         self.surf = pygame.Surface((player2.size/2, player2.size/10))
         self.surf.fill((250, 0, 0))
-        self.image = self.surf
-        self.rect = self.surf.get_rect()
+        self.image = pygame.image.load('bullet2R.png').convert_alpha()
+        self.rect = self.image.get_rect()
         self.exist = 0
         self.speed = 4*player2.speed
         self.xVelocity = 0
         self.yVelocity = 0
     
     def update(self):
+        self.speed = 4*player.speed
         if self.xVelocity == 0:
             if player2.angle<=90:
                 tmpAngle = player2.angle
@@ -272,8 +275,10 @@ class Bullet2():
                 tmpVelo = self.xVelocity
                 self.xVelocity = self.yVelocity * xAngle
                 self.yVelocity = tmpVelo * yAngle
+            self.image = pygame.transform.scale(self.image, (player.size/2, player.size/10))
             self.bulletrotation = pygame.transform.rotate(bullet2.image,player2.angle)
         self.rect.move_ip(self.xVelocity,self.yVelocity)
+
 
 # Initialize pygame
 pygame.init()
@@ -532,8 +537,8 @@ class Asteroid():
             self.rect.right = SCREEN_WIDTH+200
         if self.rect.top <= -200:
             self.rect.top = -200
-        if self.rect.bottom >= SCREEN_HEIGHT+50:
-            self.rect.bottom = SCREEN_HEIGHT+50
+        if self.rect.bottom >= SCREEN_HEIGHT+40:
+            self.rect.bottom = SCREEN_HEIGHT+40
 
 # Create the screen object
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT + UI_HEIGHT),RESIZABLE)
@@ -664,6 +669,7 @@ while running:
                         bullet.xVelocity = 0
                         bullet.rect.top = player.rect.top + (player.size/2)
                         bullet.rect.left = player.rect.left + (player.size/2)
+
             #Player2
             if player2.dead == 0:
                 if event.key == K_LALT:
@@ -689,8 +695,10 @@ while running:
     deadship2.update()
     if bullet.exist==1:
         bullet.update()
+        screen.blit(bullet.bulletrotation, bullet.rect)
     if bullet2.exist==1:
         bullet2.update()
+        screen.blit(bullet2.bulletrotation,bullet2.rect)
 
     #Update UI
     Info1H = font.render("Magenta Health:", True, (236, 240, 241))
@@ -703,14 +711,14 @@ while running:
     screen.blit(playerHealth.image,playerHealth.rect)
     playerHealth.rect.top = SCREEN_HEIGHT+10
     playerHealth.rect.left = 175
-    screen.blit(Info1S, (10,SCREEN_HEIGHT+40))
+    screen.blit(Info1S, (10,SCREEN_HEIGHT+30))
     pygame.draw.rect(screen, (255,255,255), pygame.Rect(110, SCREEN_HEIGHT+40, 150, 20))
     pygame.draw.rect(screen, (238, 255, 0), pygame.Rect(110, SCREEN_HEIGHT+40, player.boost*1.5, 20))
     screen.blit(Info2H, (SCREEN_WIDTH/2,SCREEN_HEIGHT+10))
     screen.blit(player2Health.image,player2Health.rect)
     player2Health.rect.top = SCREEN_HEIGHT+10
     player2Health.rect.left = SCREEN_WIDTH/2+125
-    screen.blit(Info1S, (SCREEN_WIDTH/2,SCREEN_HEIGHT+40))
+    screen.blit(Info1S, (SCREEN_WIDTH/2,SCREEN_HEIGHT+30))
     pygame.draw.rect(screen, (255,255,255), pygame.Rect(SCREEN_WIDTH/2+100, SCREEN_HEIGHT+40, 150, 20),0)
     pygame.draw.rect(screen, (238, 255, 0), pygame.Rect(SCREEN_WIDTH/2+100, SCREEN_HEIGHT+40, player2.boost*1.5, 20))
 
@@ -730,4 +738,4 @@ while running:
     # Update the display
     pygame.display.flip()
     clock = pygame.time.Clock()
-    clock.tick(60)
+    clock.tick(360)
