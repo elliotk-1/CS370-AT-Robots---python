@@ -38,7 +38,7 @@ mixer.music.play(-1)
 screen = pygame.display.set_mode((800,600))
 SCREEN_WIDTH, SCREEN_HEIGHT = screen.get_size()
 UI_HEIGHT = 70
-baseSpeed = ((SCREEN_HEIGHT + SCREEN_WIDTH)/700)*3
+baseSpeed = ((SCREEN_HEIGHT + SCREEN_WIDTH)/700)*4
 
 clock = pygame.time.Clock()
 
@@ -560,7 +560,6 @@ asteroid = Asteroid()
 direction = 1
 speed_x = randint(0,5)
 speed_y = randint(0,5)
-speed = 30
 bg = pygame.image.load('background.png').convert()
 bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
 bgRect = bg.get_rect()
@@ -579,7 +578,7 @@ running = True
 while running:
     #background movement
     redrawWindow()
-    clock.tick(speed)
+    clock.tick(30)
     bgX -= 1.5
     bgX2 -= 1.5
     if bgX < bg.get_width() * -1:
