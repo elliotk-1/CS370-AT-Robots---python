@@ -1,4 +1,5 @@
 # Import the pygame modules
+import sys
 import pygame_menu
 from pygame import *
 from pickle import NONE
@@ -6,6 +7,7 @@ from random import randint
 import pygame
 import time
 import math
+import os
 
 def start_the_game():
     # Import pygame.locals for easier access to key coordinates
@@ -25,11 +27,17 @@ def start_the_game():
         K_LALT
     )
 
+    def resource_path(relative_path):
+        try:
+            base_path = sys._MEIPASS
+        except Exception: base_path = os.path.abspath(".")
+        return os.path.join(base_path, relative_path)
+
     # Set sounds and music
-    BlasterNoise=pygame.mixer.Sound('blaster.wav')
-    KillNoise=pygame.mixer.Sound('Kill.wav')
-    HitNoise=pygame.mixer.Sound('Hit.wav')
-    winSound=pygame.mixer.Sound('Victory.wav')
+    BlasterNoise=pygame.mixer.Sound(resource_path('blaster.wav'))
+    KillNoise=pygame.mixer.Sound(resource_path('Kill.wav'))
+    HitNoise=pygame.mixer.Sound(resource_path('Hit.wav'))
+    winSound=pygame.mixer.Sound(resource_path('Victory.wav'))
 
     # Define constants for the screen width and height
     screen = pygame.display.set_mode((800,600))
@@ -46,7 +54,7 @@ def start_the_game():
             self.size = SCREEN_HEIGHT/6
             self.surf = pygame.Surface((self.size, self.size))
             self.surf.fill((255, 255, 150))
-            self.image = pygame.image.load('spaceship1.png').convert_alpha()
+            self.image = pygame.image.load(resource_path('spaceship1.png')).convert_alpha()
             self.image = pygame.transform.scale(self.image, (self.size, self.size))
             self.rect = self.image.get_rect()
             self.health = 5
@@ -185,7 +193,7 @@ def start_the_game():
             super(Bullet, self).__init__()
             self.surf = pygame.Surface((player.size/2, player.size/10))
             self.surf.fill((0, 0, 250))
-            self.image = pygame.image.load('bullet1R.png').convert_alpha()
+            self.image = pygame.image.load(resource_path('bullet1R.png')).convert_alpha()
             self.rect = self.image.get_rect()
             self.exist = 0
             self.speed = 4*player.speed
@@ -234,7 +242,7 @@ def start_the_game():
             super(Bullet2, self).__init__()
             self.surf = pygame.Surface((player2.size/2, player2.size/10))
             self.surf.fill((250, 0, 0))
-            self.image = pygame.image.load('bullet2R.png').convert_alpha()
+            self.image = pygame.image.load(resource_path('bullet2R.png')).convert_alpha()
             self.rect = self.image.get_rect()
             self.exist = 0
             self.speed = 4*player2.speed
@@ -283,7 +291,7 @@ def start_the_game():
             self.size = SCREEN_HEIGHT/6
             self.surf = pygame.Surface((self.size, self.size))
             self.surf.fill((255, 255, 150))
-            self.image = pygame.image.load('spaceship2.png').convert_alpha()
+            self.image = pygame.image.load(resource_path('spaceship2.png')).convert_alpha()
             self.image = pygame.transform.scale(self.image, (self.size, self.size))
             self.rect = self.image.get_rect()
             self.health = 5
@@ -418,7 +426,7 @@ def start_the_game():
             super(deadShip, self).__init__()
             self.surf = pygame.Surface((75, 25))
             self.surf.fill((255, 255, 150))
-            self.image = pygame.image.load('DeadShip.png').convert_alpha()
+            self.image = pygame.image.load(resource_path('DeadShip.png')).convert_alpha()
             self.rect = self.image.get_rect()
 
         def update(self):
@@ -433,7 +441,7 @@ def start_the_game():
             super(deadShip2, self).__init__()
             self.surf = pygame.Surface((75, 25))
             self.surf.fill((255, 255, 150))
-            self.image = pygame.image.load('DeadShip.png').convert_alpha()
+            self.image = pygame.image.load(resource_path('DeadShip.png')).convert_alpha()
             self.rect = self.image.get_rect()
 
         def update(self):
@@ -447,22 +455,22 @@ def start_the_game():
             super(PlayerHealth, self).__init__()
             self.surf = pygame.Surface((150,100))
             self.surf.fill((255,255,255))
-            self.image = pygame.image.load('Health5.png').convert_alpha()
+            self.image = pygame.image.load(resource_path('Health5.png')).convert_alpha()
             self.rect = self.image.get_rect()
             self.rect.top = SCREEN_HEIGHT+10
             self.rect.left = 175
         
         def update(self):
             if player.health == 4:
-                self.image = pygame.image.load('Health4.png').convert_alpha()
+                self.image = pygame.image.load(resource_path('Health4.png')).convert_alpha()
             elif player.health == 3:
-                self.image = pygame.image.load('Health3.png').convert_alpha()
+                self.image = pygame.image.load(resource_path('Health3.png')).convert_alpha()
             elif player.health == 2:
-                self.image = pygame.image.load('Health2.png').convert_alpha()
+                self.image = pygame.image.load(resource_path('Health2.png')).convert_alpha()
             elif player.health == 1:
-                self.image = pygame.image.load('Health1.png').convert_alpha()
+                self.image = pygame.image.load(resource_path('Health1.png')).convert_alpha()
             elif player.health == 0:
-                self.image = pygame.image.load('Health0.png').convert_alpha()
+                self.image = pygame.image.load(resource_path('Health0.png')).convert_alpha()
             self.image = pygame.transform.scale(self.image, (150, 20))
 
     class Player2Health():
@@ -470,22 +478,22 @@ def start_the_game():
             super(Player2Health, self).__init__()
             self.surf = pygame.Surface((150,100))
             self.surf.fill((255,255,255))
-            self.image = pygame.image.load('Health5.png').convert_alpha()
+            self.image = pygame.image.load(resource_path('Health5.png')).convert_alpha()
             self.rect = self.image.get_rect()
             self.rect.top = SCREEN_HEIGHT+10
             self.rect.left = (SCREEN_WIDTH/2)+125
 
         def update(self):
             if player2.health == 4:
-                self.image = pygame.image.load('Health4.png').convert_alpha()
+                self.image = pygame.image.load(resource_path('Health4.png')).convert_alpha()
             if player2.health == 3:
-                self.image = pygame.image.load('Health3.png').convert_alpha()
+                self.image = pygame.image.load(resource_path('Health3.png')).convert_alpha()
             if player2.health == 2:
-                self.image = pygame.image.load('Health2.png').convert_alpha()
+                self.image = pygame.image.load(resource_path('Health2.png')).convert_alpha()
             if player2.health == 1:
-                self.image = pygame.image.load('Health1.png').convert_alpha()
+                self.image = pygame.image.load(resource_path('Health1.png')).convert_alpha()
             if player2.health == 0:
-                self.image = pygame.image.load('Health0.png').convert_alpha()
+                self.image = pygame.image.load(resource_path('Health0.png')).convert_alpha()
             self.image = pygame.transform.scale(self.image, (150, 20))
 
     class Asteroid():
@@ -494,7 +502,7 @@ def start_the_game():
             self.size = SCREEN_HEIGHT/4
             self.surf = pygame.Surface((self.size, self.size))
             self.surf.fill((255, 255, 150))
-            self.image = pygame.image.load('asteroid2.png').convert_alpha()
+            self.image = pygame.image.load(resource_path('asteroid2.png')).convert_alpha()
             self.image = pygame.transform.scale(self.image, (self.size,self.size))
             self.rect = self.image.get_rect()
             self.rect.bottom = SCREEN_HEIGHT
@@ -529,7 +537,7 @@ def start_the_game():
     direction = 1
     speed_x = randint(0,5)
     speed_y = randint(0,5)
-    bg = pygame.image.load('background.png').convert()
+    bg = pygame.image.load(resource_path('background.png')).convert()
     bg = pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
     bgRect = bg.get_rect()
     bgX = 0
@@ -583,7 +591,7 @@ def start_the_game():
             tmp2right = (player2.rect.right / SCREEN_WIDTH) * tmpSW
             (SCREEN_WIDTH, SCREEN_HEIGHT) = screen.get_size()
             SCREEN_HEIGHT -= UI_HEIGHT
-            bg=pygame.image.load('background.png').convert()
+            bg=pygame.image.load(resource_path('background.png')).convert()
             bg=pygame.transform.scale(bg, (SCREEN_WIDTH, SCREEN_HEIGHT))
             bgX = 0
             bgX2 = bg.get_width()
@@ -702,10 +710,12 @@ def start_the_game():
         player2rotation = pygame.transform.rotate(player2.image,player2.angle)
         screen.blit(player2rotation,player2.rect)
         if player.dead == 1:
+            font = pygame.font.SysFont('agencyfb', 60)
             screen.blit(deadship.image, deadship.rect)
             playerLostText = font.render("Player 2 Wins!", True, (255,255,255),(0,0,0))
             screen.blit(playerLostText,(SCREEN_WIDTH/2-100,SCREEN_HEIGHT/2-25))
         if player2.dead == 1:
+            font = pygame.font.SysFont('agencyfb', 60)
             screen.blit(deadship2.image, deadship2.rect)
             player2LostText = font.render("Player 1 Wins!", True, (255,255,255),(0,0,0))
             screen.blit(player2LostText,(SCREEN_WIDTH/2-100,SCREEN_HEIGHT/2-25))
@@ -748,9 +758,14 @@ def how_to_play():
                 exit()
         pygame.display.flip()
 
+def resource_path(relative_path):
+        try:
+            base_path = sys._MEIPASS
+        except Exception: base_path = os.path.abspath(".")
+        return os.path.join(base_path, relative_path)
 
 pygame.mixer.init()
-mixer.music.load('BackgroundMusic.wav')
+mixer.music.load(resource_path('BackgroundMusic.wav'))
 mixer.music.play(-1)
 pygame.init()
 surface = pygame.display.set_mode((800,600))
