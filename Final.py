@@ -656,7 +656,7 @@ def start_the_game():
                     menu.mainloop(surface)
             # Check for QUIT event. If QUIT, then set running to false.
             elif event.type == QUIT:
-                exit()
+                menu.mainloop(surface)
         # Get the set of keys pressed and check for user input
         pressed_keys = pygame.key.get_pressed()
 
@@ -755,7 +755,7 @@ def how_to_play():
                 if event.key == K_ESCAPE:
                     menu.mainloop(surface)
             elif event.type == QUIT:
-                exit()
+                menu.mainloop(surface)
         pygame.display.flip()
 
 def resource_path(relative_path):
