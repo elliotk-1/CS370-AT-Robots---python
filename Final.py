@@ -648,7 +648,7 @@ def start_the_game():
                     menu.mainloop(surface)
             # Check for QUIT event. If QUIT, then set running to false.
             elif event.type == QUIT:
-                pygame_menu.event.EXIT
+                exit()
         # Get the set of keys pressed and check for user input
         pressed_keys = pygame.key.get_pressed()
 
